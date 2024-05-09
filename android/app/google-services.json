@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "452685691971",
+    "firebase_url": "https://oniversetech-52a39-default-rtdb.firebaseio.com",
+    "project_id": "oniversetech-52a39",
+    "storage_bucket": "oniversetech-52a39.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:452685691971:android:6289ececcce8d9bb5d28f6",
+        "android_client_info": {
+          "package_name": "com.oniversetech.onifarm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "452685691971-7lopbkn9n2etda3qrn5br8sfo0c4pgba.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oniversetech.onifarm",
+            "certificate_hash": "d9b64a49d3700a2427a917c37989f63a82d5af43"
+          }
+        },
+        {
+          "client_id": "452685691971-tg8v8gn73b5uvfo2u1bigc3a0rdp5fl4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgEvZHdOHeWeCcTq2jHypPUm2LW31fOrc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "452685691971-tg8v8gn73b5uvfo2u1bigc3a0rdp5fl4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

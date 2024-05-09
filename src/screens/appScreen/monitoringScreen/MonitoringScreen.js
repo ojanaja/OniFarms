@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, ImageBackground, ScrollView } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
@@ -7,11 +7,31 @@ import Colors from '../../../constants/Colors';
 import Fonts from '../../../constants/Fonts';
 import LinearGradient from 'react-native-linear-gradient';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import { Collapse, CollapseHeader, CollapseBody, AccordionList } from 'accordion-collapse-react-native';
+import { Table, Row, Rows } from 'react-native-table-component';
+
 const MonitoringScreen = () => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleCollapse = () => {
+        setIsOpen(!isOpen);
+    };
+
+    const tableData = [
+        ['Suhu', ':', '25 - 30 C'],
+        ['Kelembapan', ':', '65 - 80 %'],
+        ['pH', ':', '5 - 8'],
+        ['Nitrogen', ':', '100 - 200ppm'],
+        ['Phosphor', ':', '100 - 200ppm'],
+        ['Kalium', ':', '100 - 200ppm'],
+    ];
+
     return (
         <ScrollView
             contentContainerStyle={styles.contentContainerStyle}
             showsVerticalScrollIndicator={false}
+            scrollEnabled={true}
+            overScrollMode="auto"
         >
             <ImageBackground
                 source={require('../../../../assets/images/Background.png')}
@@ -91,36 +111,55 @@ const MonitoringScreen = () => {
                         </View>
                     </View>
                 </View>
-                <View style={styles.nodeMonitorContainer}>
-                    <LinearGradient
-                        style={styles.linearGradient}
-                        start={{ x: 0, y: -0.3 }} end={{ x: 0.9, y: 1.1 }}
-                        colors={['#E0F8F0', '#FFFFFF', '#9BD5B5']}
-                        locations={[0.1, 0.5, 1]}
-                    >
-                        <View style={styles.nodeMonitorHeader}>
-                            <Text style={styles.nodeMonitorText}>Node Monitor</Text>
-                        </View>
-                        <MapView
-                            provider={PROVIDER_GOOGLE}
-                            style={styles.map}
-                            initialRegion={{
-                                latitude: 51.5074,
-                                longitude: -0.1278,
-                                latitudeDelta: 0.0922,
-                                longitudeDelta: 0.0421,
-                            }}
-                        />
-                    </LinearGradient>
-                </View>
             </ImageBackground>
+            <View style={styles.nodeMonitorContainer}>
+                <LinearGradient
+                    style={styles.linearGradient}
+                    start={{ x: 0, y: -0.3 }} end={{ x: 0.9, y: 1.1 }}
+                    colors={['#E0F8F0', '#FFFFFF', '#9BD5B5']}
+                    locations={[0.1, 0.5, 1]}
+                >
+                    <View style={styles.nodeMonitorHeader}>
+                        <Text style={styles.nodeMonitorText}>Monitor per Bendengan</Text>
+                    </View>
+                    <MapView
+                        provider={PROVIDER_GOOGLE}
+                        style={styles.map}
+                        initialRegion={{
+                            latitude: 51.5074,
+                            longitude: -0.1278,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
+                        }}
+                    />
+                    <View style={styles.accordionContainer}>
+                        <Collapse
+                            onToggle={toggleCollapse}
+                            isExpanded={isOpen}
+                        >
+                            <CollapseHeader style={[styles.accordionHeader, isOpen && { borderBottomRightRadius: 0 }]}>
+                                <View style={styles.accordionHeaderContainer}>
+                                    <Text style={styles.accordionHeaderText}>Bendengan 1</Text>
+                                    <FontAwesome6 name="angle-down" color={Colors.WHITE} size={20} />
+                                </View>
+                            </CollapseHeader>
+                            <CollapseBody style={styles.accordionBody}>
+                                <View>
+                                    <Table>
+                                        <Rows data={tableData} style={styles.row} textStyle={styles.text} />
+                                    </Table>
+                                </View>
+                            </CollapseBody>
+                        </Collapse>
+                    </View>
+                </LinearGradient>
+            </View>
         </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
     contentContainerStyle: {
-        height: hp('100%'),
         width: wp('100%'),
     },
     backgroundImage: {
@@ -247,7 +286,6 @@ const styles = StyleSheet.create({
     linearGradient: {
         height: hp('100%'),
         width: wp('100%'),
-        marginTop: hp('5%'),
         borderTopRightRadius: wp('4%'),
         borderTopLeftRadius: wp('4%'),
     },
@@ -262,8 +300,51 @@ const styles = StyleSheet.create({
     },
     map: {
         width: wp('100%'),
-        height: hp('30%'),
-    }
+        height: hp('25%'),
+    },
+    accordionContainer: {
+        marginVertical: hp('3%'),
+    },
+    accordionHeader: {
+        backgroundColor: Colors.PRIMARY,
+        width: wp('90%'),
+        height: hp('4%'),
+        alignSelf: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: wp('3%'),
+        borderTopRightRadius: wp('5%'),
+        borderBottomRightRadius: wp('5%'),
+        elevation: 5,
+    },
+    accordionHeaderContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    accordionHeaderText: {
+        fontFamily: Fonts.semibold,
+        fontSize: 12,
+        color: Colors.WHITE
+    },
+    accordionBody: {
+        backgroundColor: Colors.WHITE,
+        width: wp('90%'),
+        height: 'auto',
+        alignSelf: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: wp('3%'),
+        borderBottomRightRadius: wp('5%'),
+        elevation: 5,
+    },
+    row: {
+        paddingHorizontal: wp('1%'),
+        paddingVertical: hp('1%'),
+    },
+    text: {
+        fontFamily: Fonts.regular,
+        fontSize: 12,
+        color: Colors.PRIMARY,
+    },
 })
 
 export default MonitoringScreen;

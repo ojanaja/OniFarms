@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Colors from '../../../constants/Colors';
 import Fonts from '../../../constants/Fonts';
+import { Table, Row, Rows } from 'react-native-table-component';
 
 const KesuburanScreen = () => {
     const [scrollViewHeight, setScrollViewHeight] = useState(0);
@@ -18,13 +19,21 @@ const KesuburanScreen = () => {
         }
     }, []);
 
+    const tableData = [
+        ['Suhu', ':', '25 - 30 C'],
+        ['Kelembapan', ':', '65 - 80 %'],
+        ['pH', ':', '5 - 8'],
+        ['Nitrogen', ':', '100 - 200ppm'],
+        ['Phosphor', ':', '100 - 200ppm'],
+        ['Kalium', ':', '100 - 200ppm'],
+    ];
+
     return (
         <ScrollView
             ref={scrollViewRef}
             contentContainerStyle={styles.contentContainerStyle}
             scrollEnabled={true}
             showsVerticalScrollIndicator={false}
-            overScrollMode="always"
         >
             <LinearGradient
                 style={styles.linearGradient}
@@ -100,9 +109,9 @@ const KesuburanScreen = () => {
                         <Text style={styles.rentangNilaiText}>Rentang Nilai</Text>
                     </View>
                     <View style={styles.tableContainer}>
-                        <View>
-
-                        </View>
+                        <Table>
+                            <Rows data={tableData} style={styles.row} textStyle={styles.text} />
+                        </Table>
                     </View>
                 </View>
             </LinearGradient>
@@ -303,7 +312,17 @@ const styles = StyleSheet.create({
         borderTopRightRadius: wp('4%'),
         borderBottomRightRadius: wp('4%'),
         elevation: 5,
-        marginBottom: hp('5%')
+        marginBottom: hp('5%'),
+        paddingTop: hp('1%')
+    },
+    row: {
+        paddingHorizontal: wp('5%'),
+        paddingVertical: hp('1%'),
+    },
+    text: {
+        fontFamily: Fonts.regular,
+        fontSize: 12,
+        color: Colors.PRIMARY,
     },
 });
 

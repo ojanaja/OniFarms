@@ -12,6 +12,8 @@ import { StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Colors from '../constants/Colors';
 import Fonts from '../constants/Fonts';
+import LoginScreen from '../screens/authScreen/LoginScreen';
+import RegisterScreen from '../screens/authScreen/RegisterScreen';
 
 const Stack = createStackNavigator();
 const MainStackNavigators = () => {
@@ -21,6 +23,18 @@ const MainStackNavigators = () => {
                 <Stack.Screen
                     name="BottomTab"
                     component={BottomTabNavigators}
+                    options={{ headerShown: false }}
+                />
+            </Stack.Group>
+            <Stack.Group>
+                <Stack.Screen
+                    name="LoginScreen"
+                    component={LoginScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="RegisterScreen"
+                    component={RegisterScreen}
                     options={{ headerShown: false }}
                 />
             </Stack.Group>

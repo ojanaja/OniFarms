@@ -1,4 +1,4 @@
-package com.onifarms
+package com.oniversetech.onifarm
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

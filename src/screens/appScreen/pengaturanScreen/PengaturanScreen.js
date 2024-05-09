@@ -1,15 +1,47 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Colors from '../../../constants/Colors';
 import Fonts from '../../../constants/Fonts';
 import LinearGradient from 'react-native-linear-gradient';
 import Octicons from 'react-native-vector-icons/Octicons'
 import { useNavigation } from '@react-navigation/native';
+import { Dropdown } from 'react-native-element-dropdown';
+import { firebase } from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+
+const data = [
+    { label: 'Item 1', value: '1' },
+    { label: 'Item 2', value: '2' },
+    { label: 'Item 3', value: '3' },
+    { label: 'Item 4', value: '4' },
+    { label: 'Item 5', value: '5' },
+    { label: 'Item 6', value: '6' },
+    { label: 'Item 7', value: '7' },
+    { label: 'Item 8', value: '8' },
+];
 
 const PengaturanScreen = () => {
     const navigation = useNavigation();
+    const [value, setValue] = useState(null);
+    const [isFocus, setIsFocus] = useState(false);
+    const [userName, setUserName] = useState('');
 
+    const user = firebase.auth().currentUser;
+    const userRef = firestore().collection('users').doc(user.uid);
+
+    userRef.get().then((doc) => {
+        if (doc.exists) {
+            const userData = doc.data();
+            const userName = userData.name;
+            setUserName(userData.name);
+            console.log('User Name:', userName);
+        } else {
+            console.log('No such document!');
+        }
+    }).catch((error) => {
+        console.log('Error getting document:', error);
+    });
     return (
         <View style={styles.container}>
             <LinearGradient
@@ -20,6 +52,28 @@ const PengaturanScreen = () => {
             >
                 <View style={styles.profileContainer}>
                     <View style={styles.profile}>
+                        <Dropdown
+                            style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                            placeholderStyle={styles.placeholderStyle}
+                            selectedTextStyle={styles.selectedTextStyle}
+                            inputSearchStyle={styles.inputSearchStyle}
+                            itemTextStyle={styles.itemTextStyle}
+                            itemContainerStyle={styles.itemContainerStyle}
+                            data={data}
+                            maxHeight={300}
+                            labelField="label"
+                            valueField="value"
+                            placeholder={!isFocus ? 'Lahan 1' : 'Lahan 1'}
+                            value={value}
+                            onFocus={() => setIsFocus(true)}
+                            onBlur={() => setIsFocus(false)}
+                            onChange={item => {
+                                setValue(item.value);
+                                setIsFocus(false);
+                            }}
+                            iconColor={Colors.PRIMARY}
+                        />
+
                         <TouchableOpacity
                             style={styles.profilePicture}
                             onPress={() => { }}
@@ -28,8 +82,8 @@ const PengaturanScreen = () => {
                             <Image style={styles.profilePictureImage} source={require('../../../../assets/images/ProfileIcon.png')} />
                         </TouchableOpacity>
                         <View style={styles.profileInfo}>
-                            <Text style={styles.profileName}>Juragan Bawang</Text>
-                            <Text style={styles.profileEmail}>juraganbawangdemak@gmail.com</Text>
+                            <Text style={styles.profileName}>{userName}</Text>
+                            <Text style={styles.profileEmail}>{user.email}</Text>
                         </View>
                     </View>
                 </View>
@@ -140,6 +194,33 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 14,
         fontFamily: Fonts.medium,
+        color: Colors.PRIMARY,
+    },
+    dropdown: {
+        height: hp('4%'),
+        width: wp('20%'),
+        position: 'absolute',
+        right: wp('7%'),
+        top: hp('0.2%'),
+    },
+    label: {
+        fontFamily: Fonts.semibold,
+        fontSize: 11,
+        color: Colors.PRIMARY,
+    },
+    placeholderStyle: {
+        fontFamily: Fonts.semibold,
+        fontSize: 11,
+        color: Colors.PRIMARY,
+    },
+    selectedTextStyle: {
+        fontFamily: Fonts.semibold,
+        fontSize: 11,
+        color: Colors.PRIMARY,
+    },
+    itemTextStyle: {
+        fontFamily: Fonts.semibold,
+        fontSize: 11,
         color: Colors.PRIMARY,
     },
 
