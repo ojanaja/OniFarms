@@ -12,7 +12,6 @@ const LoginScreen = () => {
     const [value, setValue] = useState('');
     const navigation = useNavigation()
 
-
     return (
         <View style={styles.container}>
             <LinearGradient

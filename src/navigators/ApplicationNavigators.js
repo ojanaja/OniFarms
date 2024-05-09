@@ -1,11 +1,12 @@
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
-import AuthenticationStackNavigators from './AuthenticationStackNavigators'
+import BottomTabNavigators from './BottomTabNavigators'
+import MainStackNavigators from './MainStackNavigators'
 
 const ApplicationNavigators = () => {
     return (
         <NavigationContainer>
-            <AuthenticationStackNavigators />
+            <MainStackNavigators />
         </NavigationContainer>
     )
 }
