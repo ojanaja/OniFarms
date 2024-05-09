@@ -6,9 +6,48 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Colors from '../../../constants/Colors';
 import Fonts from '../../../constants/Fonts';
 import LinearGradient from 'react-native-linear-gradient';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Collapse, CollapseHeader, CollapseBody, AccordionList } from 'accordion-collapse-react-native';
 import { Table, Row, Rows } from 'react-native-table-component';
+
+const MyMapView = () => {
+    const [pinPointData] = useState({
+        latitude: 51.5074,
+        longitude: -0.1278,
+        title: 'Your Location Name',
+        description: 'This is a note about the location.',
+    });
+
+    const initialRegion = {
+        latitude: pinPointData.latitude,
+        longitude: pinPointData.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    };
+
+    return (
+        <MapView
+            provider={PROVIDER_GOOGLE}
+            style={styles.map}
+            initialRegion={initialRegion}
+        >
+            <Marker
+                coordinate={{
+                    latitude: pinPointData.latitude,
+                    longitude: pinPointData.longitude,
+                }}
+                title={pinPointData.title}
+            >
+                <Callout>
+                    <View style={styles.calloutContainer}>
+                        <Text style={styles.calloutText}>{pinPointData.title}</Text>
+                        <Text style={styles.calloutSubtext}>{pinPointData.description}</Text>
+                    </View>
+                </Callout>
+            </Marker>
+        </MapView>
+    );
+};
 
 const MonitoringScreen = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -122,16 +161,7 @@ const MonitoringScreen = () => {
                     <View style={styles.nodeMonitorHeader}>
                         <Text style={styles.nodeMonitorText}>Monitor per Bendengan</Text>
                     </View>
-                    <MapView
-                        provider={PROVIDER_GOOGLE}
-                        style={styles.map}
-                        initialRegion={{
-                            latitude: 51.5074,
-                            longitude: -0.1278,
-                            latitudeDelta: 0.0922,
-                            longitudeDelta: 0.0421,
-                        }}
-                    />
+                    <MyMapView />
                     <View style={styles.accordionContainer}>
                         <Collapse
                             onToggle={toggleCollapse}
@@ -284,6 +314,7 @@ const styles = StyleSheet.create({
         color: Colors.BLACK,
     },
     linearGradient: {
+        marginTop: hp('-2%'),
         height: hp('100%'),
         width: wp('100%'),
         borderTopRightRadius: wp('4%'),
@@ -300,7 +331,7 @@ const styles = StyleSheet.create({
     },
     map: {
         width: wp('100%'),
-        height: hp('25%'),
+        height: hp('30%'),
     },
     accordionContainer: {
         marginVertical: hp('3%'),
@@ -324,7 +355,7 @@ const styles = StyleSheet.create({
     accordionHeaderText: {
         fontFamily: Fonts.semibold,
         fontSize: 12,
-        color: Colors.WHITE
+        color: Colors.WHITE,
     },
     accordionBody: {
         backgroundColor: Colors.WHITE,
@@ -345,7 +376,19 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: Colors.PRIMARY,
     },
-})
+    calloutContainer: {
+        padding: 10,
+        backgroundColor: '#fff',
+        borderRadius: 5,
+    },
+    calloutText: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    calloutSubtext: {
+        fontSize: 14,
+    },
+});
 
 export default MonitoringScreen;
 

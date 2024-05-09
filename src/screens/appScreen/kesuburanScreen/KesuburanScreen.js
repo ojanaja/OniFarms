@@ -124,7 +124,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     linearGradient: {
-        height: hp('100%'),
         width: wp('100%'),
     },
     indicatorContainer: {
@@ -312,7 +311,6 @@ const styles = StyleSheet.create({
         borderTopRightRadius: wp('4%'),
         borderBottomRightRadius: wp('4%'),
         elevation: 5,
-        marginBottom: hp('5%'),
         paddingTop: hp('1%')
     },
     row: {
