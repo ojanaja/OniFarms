@@ -25,27 +25,20 @@ const RegisterScreen = () => {
 
     const handleRegister = async () => {
         try {
-            // Create user with email and password
             const userCredential = await auth().createUserWithEmailAndPassword(email, password);
 
-            // Get the user's ID
             const userId = userCredential.user.uid;
-            // Add additional user data to Firestore
             await firestore().collection('users').doc(userId).set({
                 name: name,
                 phoneNumber: phoneNumber,
                 email: email,
-                // Add any other fields you want to store
             });
 
-            // Registration successful
             ToastAndroid.show('Registration successful', ToastAndroid.LONG);
 
-            // Navigate to another screen or perform any necessary action
             navigation.navigate('LoginScreen');
         } catch (error) {
             console.error(error)
-            // Handle errors
             if (error.code === 'auth/email-already-in-use') {
                 ToastAndroid.show('Email address is already in use', ToastAndroid.LONG);
             } else {
@@ -55,9 +48,9 @@ const RegisterScreen = () => {
     };
 
     GoogleSignin.configure({
-        webClientId: '452685691971-tg8v8gn73b5uvfo2u1bigc3a0rdp5fl4.apps.googleusercontent.com', // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
-        hostedDomain: 'http://oniversetech-52a39.firebaseapp.com', // specifies a hosted domain restriction
-        profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
+        webClientId: '452685691971-tg8v8gn73b5uvfo2u1bigc3a0rdp5fl4.apps.googleusercontent.com',
+        hostedDomain: 'http://oniversetech-52a39.firebaseapp.com',
+        profileImageSize: 120,
     });
 
     const handleGoogleSignUp = async () => {
@@ -65,7 +58,6 @@ const RegisterScreen = () => {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
             const token = userInfo.idToken;
-            // Assuming you have a method to handle successful sign-in with Google
             handleSuccessfulLogin(token);
         } catch (error) {
             console.error(error)
@@ -94,17 +86,14 @@ const RegisterScreen = () => {
 
     const handleSuccessfulLogin = async (token) => {
         try {
-            // // Store the token securely
             console.table(token);
             await RNSecureStorage.setItem('authToken', token, { accessible: ACCESSIBLE.WHEN_UNLOCKED }).then((res) => {
                 console.log(res);
             }).catch((err) => {
                 console.log(err);
             });
-            // Navigate to the desired screen
             navigation.navigate('BottomTab');
         } catch (error) {
-            // Handle error
             console.error('Error storing token:', error);
         }
     };

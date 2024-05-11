@@ -9,6 +9,8 @@ import { useNavigation } from '@react-navigation/native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { firebase } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import RNSecureStorage from 'rn-secure-storage';
 
 const data = [
     { label: 'Item 1', value: '1' },
@@ -29,6 +31,7 @@ const PengaturanScreen = () => {
 
     const user = firebase.auth().currentUser;
     const userRef = firestore().collection('users').doc(user.uid);
+    console.log(user.uid);
 
     userRef.get().then((doc) => {
         if (doc.exists) {
@@ -42,6 +45,17 @@ const PengaturanScreen = () => {
     }).catch((error) => {
         console.log('Error getting document:', error);
     });
+
+    const handleSignOut = () => {
+        auth()
+            .signOut()
+            .then(() => [console.log('User signed out!'), navigation.navigate('LoginScreen'), RNSecureStorage.removeItem('authToken').then((res) => {
+                console.log(res);
+            }).catch((err) => {
+                console.log(err);
+            })]);
+    };
+
     return (
         <View style={styles.container}>
             <LinearGradient
@@ -113,6 +127,13 @@ const PengaturanScreen = () => {
                             onPress={() => navigation.navigate('DataRecord')}
                         >
                             <Text style={styles.buttonText}>Data record</Text>
+                            <Octicons size={24} name="chevron-right" color={Colors.PRIMARY} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.buttonStyle}
+                            onPress={handleSignOut}
+                        >
+                            <Text style={styles.buttonText}>Sign Out</Text>
                             <Octicons size={24} name="chevron-right" color={Colors.PRIMARY} />
                         </TouchableOpacity>
                     </LinearGradient>

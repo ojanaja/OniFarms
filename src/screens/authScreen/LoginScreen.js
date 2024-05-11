@@ -21,20 +21,18 @@ const LoginScreen = () => {
     const navigation = useNavigation();
 
     GoogleSignin.configure({
-        webClientId: '452685691971-tg8v8gn73b5uvfo2u1bigc3a0rdp5fl4.apps.googleusercontent.com', // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
-        hostedDomain: 'http://oniversetech-52a39.firebaseapp.com', // specifies a hosted domain restriction
-        profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
+        webClientId: '452685691971-tg8v8gn73b5uvfo2u1bigc3a0rdp5fl4.apps.googleusercontent.com',
+        hostedDomain: 'http://oniversetech-52a39.firebaseapp.com',
+        profileImageSize: 120,
     });
 
     const handleLogin = () => {
         auth()
             .signInWithEmailAndPassword(email, password)
             .then(async () => {
-                // Get the user token after successful login
                 const currentUser = auth().currentUser;
                 if (currentUser) {
                     const token = await currentUser.getIdToken();
-                    // Pass the token to handleSuccessfulLogin
                     handleSuccessfulLogin(token);
                 } else {
                     ToastAndroid.show('User not found', ToastAndroid.LONG);
@@ -79,17 +77,14 @@ const LoginScreen = () => {
 
     const handleSuccessfulLogin = async (token) => {
         try {
-            // Store the token securely
             console.table(token);
             await RNSecureStorage.setItem('authToken', token, { accessible: ACCESSIBLE.WHEN_UNLOCKED }).then((res) => {
                 console.log(res);
             }).catch((err) => {
                 console.log(err);
             });
-            // Navigate to the desired screen
             navigation.navigate('BottomTab');
         } catch (error) {
-            // Handle error
             console.error('Error storing token:', error);
         }
     };

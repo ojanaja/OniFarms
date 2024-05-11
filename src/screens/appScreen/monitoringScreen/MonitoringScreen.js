@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
         width: wp('100%'),
     },
     backgroundImage: {
-        height: hp('80%'),
+        height: hp('70%'),
         width: wp('100%'),
     },
     headerContainer: {
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: wp('100%'),
         alignSelf: 'center',
-        marginVertical: hp('2%')
+        marginVertical: hp('2%'),
     },
     locationContainer: {
         flexDirection: 'row',
