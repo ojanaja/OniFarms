@@ -10,6 +10,10 @@ import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Collapse, CollapseHeader, CollapseBody, AccordionList } from 'accordion-collapse-react-native';
 import { Table, Row, Rows } from 'react-native-table-component';
 
+/**
+ * MyMapView component renders a MapView component with a marker and callout for a given location.
+ * It takes pinPointData as a prop, containing latitude, longitude, title, and description of the location.
+ */
 const MyMapView = () => {
     const [pinPointData] = useState({
         latitude: 51.5074,
@@ -49,13 +53,19 @@ const MyMapView = () => {
     );
 };
 
+/**
+ * MonitoringScreen component displays a screen with various monitoring data and a map.
+ * It includes temperature, humidity, pH, and NPK levels, along with an accordion list for monitoring per location.
+ */
 const MonitoringScreen = () => {
     const [isOpen, setIsOpen] = useState(false);
 
+    // Function to toggle the collapse state
     const toggleCollapse = () => {
         setIsOpen(!isOpen);
     };
 
+    // Data for the monitoring table
     const tableData = [
         ['Suhu', ':', '25 - 30 C'],
         ['Kelembapan', ':', '65 - 80 %'],
@@ -76,6 +86,7 @@ const MonitoringScreen = () => {
                 source={require('../../../../assets/images/Background.png')}
                 style={styles.backgroundImage}
             >
+                {/* Header section with location and age */}
                 <View style={styles.headerContainer}>
                     <View style={styles.locationContainer}>
                         <Entypo name="location-pin" size={25} color={Colors.RED} />
@@ -89,7 +100,9 @@ const MonitoringScreen = () => {
                         </View>
                     </View>
                 </View>
+                {/* Chart section displaying temperature, humidity, pH, and NPK levels */}
                 <View style={styles.chartContainer}>
+                    {/* Top row of the chart */}
                     <View style={styles.chartTop}>
                         <View style={[styles.chart, { paddingRight: wp('9%'), borderRightColor: Colors.WHITE, borderRightWidth: 1 }]}>
                             <View style={[styles.chartIcon, { gap: wp('8%') }]}>
@@ -101,6 +114,7 @@ const MonitoringScreen = () => {
                                 <Text style={styles.chartValueText}>30</Text>
                             </View>
                         </View>
+                        {/* Kelembapan chart */}
                         <View style={[styles.chart, { paddingRight: wp('1%') }]}>
                             <View style={[styles.chartIcon, { gap: wp('3%') }]}>
                                 <Image source={require('../../../../assets/images/KelembapanIconWhite.png')} />
@@ -112,7 +126,9 @@ const MonitoringScreen = () => {
                             </View>
                         </View>
                     </View>
+                    {/* Bottom row of the chart */}
                     <View style={styles.chartBottom}>
+                        {/* pH chart */}
                         <View style={[styles.chart, { paddingRight: wp('9%'), paddingTop: hp('1%'), borderRightColor: Colors.WHITE, borderRightWidth: 1 }]}>
                             <View style={[styles.chartIcon, { gap: wp('8%') }]}>
                                 <Image source={require('../../../../assets/images/pHIconWhite.png')} />
@@ -122,6 +138,7 @@ const MonitoringScreen = () => {
                                 <Text style={styles.chartValueText}>7</Text>
                             </View>
                         </View>
+                        {/* NPK chart */}
                         <View style={[styles.chart, { paddingRight: wp('1%'), paddingTop: hp('1%') }]}>
                             <View style={[styles.chartIcon, { gap: wp('5%') }]}>
                                 <Image source={require('../../../../assets/images/NPKIconWhite.png')} />
@@ -133,6 +150,7 @@ const MonitoringScreen = () => {
                                     <Text style={styles.threeChartValueText}>3200</Text>
                                 </View>
                             </View>
+                            {/* Nitrogen and Phosphor chart */}
                             <View style={styles.nitrogenPhosphorContainer}>
                                 <View style={styles.kaliumContainer}>
                                     <Text style={styles.kaliumText}>Nitrogen</Text>
@@ -151,6 +169,8 @@ const MonitoringScreen = () => {
                     </View>
                 </View>
             </ImageBackground>
+
+            {/* Node monitoring section */}
             <View style={styles.nodeMonitorContainer}>
                 <LinearGradient
                     style={styles.linearGradient}
@@ -158,10 +178,13 @@ const MonitoringScreen = () => {
                     colors={['#E0F8F0', '#FFFFFF', '#9BD5B5']}
                     locations={[0.1, 0.5, 1]}
                 >
+                    {/* Header for node monitoring */}
                     <View style={styles.nodeMonitorHeader}>
                         <Text style={styles.nodeMonitorText}>Monitor per Bendengan</Text>
                     </View>
+                    {/* MapView component */}
                     <MyMapView />
+                    {/* Accordion for bendengan data */}
                     <View style={styles.accordionContainer}>
                         <Collapse
                             onToggle={toggleCollapse}
@@ -174,6 +197,7 @@ const MonitoringScreen = () => {
                                 </View>
                             </CollapseHeader>
                             <CollapseBody style={styles.accordionBody}>
+                                {/* Table for bendengan data */}
                                 <View>
                                     <Table>
                                         <Rows data={tableData} style={styles.row} textStyle={styles.text} />

@@ -9,10 +9,12 @@ import Feather from 'react-native-vector-icons/Feather';
 import { TimerPickerModal } from 'react-native-timer-picker';
 
 const JadwalPenyiramanScreen = () => {
+    // State variables to manage toggle switches and timer picker modal visibility
     const [isOn, setIsOn] = useState(false);
     const [showPicker, setShowPicker] = useState(false);
     const [alarmString, setAlarmString] = useState(null);
 
+    // Function to format time in HH:mm format
     const formatTime = (time) => {
         const hours = Math.floor(time / 60);
         const minutes = time % 60;

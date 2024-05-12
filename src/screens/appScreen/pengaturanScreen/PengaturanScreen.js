@@ -12,6 +12,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import RNSecureStorage from 'rn-secure-storage';
 
+// Data for dropdown menu
 const data = [
     { label: 'Item 1', value: '1' },
     { label: 'Item 2', value: '2' },
@@ -25,36 +26,44 @@ const data = [
 
 const PengaturanScreen = () => {
     const navigation = useNavigation();
-    const [value, setValue] = useState(null);
-    const [isFocus, setIsFocus] = useState(false);
-    const [userName, setUserName] = useState('');
+    const [value, setValue] = useState(null); // State for dropdown value
+    const [isFocus, setIsFocus] = useState(false); // State to track focus state of dropdown
+    const [userName, setUserName] = useState(''); // State to store user's name
 
-    const user = firebase.auth().currentUser;
-    const userRef = firestore().collection('users').doc(user.uid);
-    console.log(user.uid);
+    // Fetching user data from Firestore
+    useEffect(() => {
+        const user = firebase.auth().currentUser;
+        const userRef = firestore().collection('users').doc(user.uid);
 
-    userRef.get().then((doc) => {
-        if (doc.exists) {
-            const userData = doc.data();
-            const userName = userData.name;
-            setUserName(userData.name);
-            console.log('User Name:', userName);
-        } else {
-            console.log('No such document!');
-        }
-    }).catch((error) => {
-        console.log('Error getting document:', error);
-    });
+        userRef.get().then((doc) => {
+            if (doc.exists) {
+                const userData = doc.data();
+                const userName = userData.name;
+                setUserName(userData.name);
+            } else {
+                console.log('No such document!');
+            }
+        }).catch((error) => {
+            console.log('Error getting document:', error);
+        });
+    }, []);
 
+    // Function to handle sign out
     const handleSignOut = () => {
         auth()
             .signOut()
-            .then(() => [console.log('User signed out!'), navigation.navigate('LoginScreen'), RNSecureStorage.removeItem('authToken').then((res) => {
-                console.log(res);
-            }).catch((err) => {
-                console.log(err);
-            })]);
+            .then(() => {
+                console.log('User signed out!');
+                navigation.navigate('LoginScreen');
+                // Remove auth token from secure storage
+                RNSecureStorage.removeItem('authToken').then((res) => {
+                    console.log(res);
+                }).catch((err) => {
+                    console.log(err);
+                });
+            });
     };
+
 
     return (
         <View style={styles.container}>

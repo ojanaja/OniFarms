@@ -20,37 +20,48 @@ const LoginScreen = () => {
     const [password, setPassword] = useState('');
     const navigation = useNavigation();
 
+    // Configuration for Google Sign-In
     GoogleSignin.configure({
         webClientId: '452685691971-tg8v8gn73b5uvfo2u1bigc3a0rdp5fl4.apps.googleusercontent.com',
         hostedDomain: 'http://oniversetech-52a39.firebaseapp.com',
         profileImageSize: 120,
     });
 
+    // Function to handle email/password login
     const handleLogin = () => {
         auth()
             .signInWithEmailAndPassword(email, password)
             .then(async () => {
+                // Get the current user
                 const currentUser = auth().currentUser;
                 if (currentUser) {
+                    // Get the ID token
                     const token = await currentUser.getIdToken();
+                    // Handle successful login
                     handleSuccessfulLogin(token);
                 } else {
+                    // Handle case where user is not found
                     ToastAndroid.show('User not found', ToastAndroid.LONG);
                 }
             })
             .catch(error => {
+                // Handle login errors
                 ToastAndroid.show('Login Error', ToastAndroid.LONG);
             });
     };
 
+    // Function to handle Google Sign-In
     const handleGoogleSignIn = async () => {
         try {
+            // Check if Google Play Services are available
             await GoogleSignin.hasPlayServices();
+            // Sign in with Google
             const userInfo = await GoogleSignin.signIn();
             const token = userInfo.idToken;
-            // Assuming you have a method to handle successful sign-in with Google
+            // Handle successful Google Sign-In
             handleSuccessfulLogin(token);
         } catch (error) {
+            // Handle Google Sign-In errors
             console.error(error)
             if (isErrorWithCode(error)) {
                 switch (error.code) {
@@ -75,20 +86,22 @@ const LoginScreen = () => {
         }
     };
 
+    // Function to handle successful login
     const handleSuccessfulLogin = async (token) => {
         try {
-            console.table(token);
+            // Store the authentication token securely
             await RNSecureStorage.setItem('authToken', token, { accessible: ACCESSIBLE.WHEN_UNLOCKED }).then((res) => {
                 console.log(res);
             }).catch((err) => {
                 console.log(err);
             });
+            // Navigate to the desired screen
             navigation.navigate('BottomTab');
         } catch (error) {
+            // Handle error storing token
             console.error('Error storing token:', error);
         }
     };
-
 
     return (
         <View style={styles.container}>

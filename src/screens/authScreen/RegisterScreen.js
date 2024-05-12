@@ -17,28 +17,37 @@ import {
 } from '@react-native-google-signin/google-signin';
 
 const RegisterScreen = () => {
-    const [name, setName] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const navigation = useNavigation();
+    const [name, setName] = useState(''); // State for storing name input
+    const [phoneNumber, setPhoneNumber] = useState(''); // State for storing phone number input
+    const [email, setEmail] = useState(''); // State for storing email input
+    const [password, setPassword] = useState(''); // State for storing password input
+    const navigation = useNavigation(); // Getting navigation object
 
+    // Function to handle user registration
     const handleRegister = async () => {
         try {
+            // Create user with email and password
             const userCredential = await auth().createUserWithEmailAndPassword(email, password);
 
+            // Get the user's ID
             const userId = userCredential.user.uid;
+
+            // Add additional user data to Firestore
             await firestore().collection('users').doc(userId).set({
                 name: name,
                 phoneNumber: phoneNumber,
                 email: email,
+                // Add any other fields you want to store
             });
 
+            // Show registration success message
             ToastAndroid.show('Registration successful', ToastAndroid.LONG);
 
+            // Navigate to login screen
             navigation.navigate('LoginScreen');
         } catch (error) {
-            console.error(error)
+            console.error(error);
+            // Handle registration errors
             if (error.code === 'auth/email-already-in-use') {
                 ToastAndroid.show('Email address is already in use', ToastAndroid.LONG);
             } else {
@@ -47,20 +56,28 @@ const RegisterScreen = () => {
         }
     };
 
+    // Configuration for Google Sign-In
     GoogleSignin.configure({
         webClientId: '452685691971-tg8v8gn73b5uvfo2u1bigc3a0rdp5fl4.apps.googleusercontent.com',
         hostedDomain: 'http://oniversetech-52a39.firebaseapp.com',
         profileImageSize: 120,
     });
 
+    // Function to handle Google Sign-Up
     const handleGoogleSignUp = async () => {
         try {
+            // Check for Google Play Services
             await GoogleSignin.hasPlayServices();
+
+            // Sign in with Google
             const userInfo = await GoogleSignin.signIn();
             const token = userInfo.idToken;
+
+            // Handle successful Google sign-in
             handleSuccessfulLogin(token);
         } catch (error) {
-            console.error(error)
+            console.error(error);
+            // Handle Google sign-in errors
             if (isErrorWithCode(error)) {
                 switch (error.code) {
                     case statusCodes.NO_SAVED_CREDENTIAL_FOUND:
@@ -84,14 +101,13 @@ const RegisterScreen = () => {
         }
     };
 
+    // Function to handle successful login (for both email/password and Google sign-in)
     const handleSuccessfulLogin = async (token) => {
         try {
-            console.table(token);
-            await RNSecureStorage.setItem('authToken', token, { accessible: ACCESSIBLE.WHEN_UNLOCKED }).then((res) => {
-                console.log(res);
-            }).catch((err) => {
-                console.log(err);
-            });
+            // Store the authentication token securely
+            await RNSecureStorage.setItem('authToken', token, { accessible: ACCESSIBLE.WHEN_UNLOCKED });
+
+            // Navigate to the desired screen
             navigation.navigate('BottomTab');
         } catch (error) {
             console.error('Error storing token:', error);

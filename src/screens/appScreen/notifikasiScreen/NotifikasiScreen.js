@@ -7,13 +7,18 @@ import Fonts from '../../../constants/Fonts';
 
 const NotifikasiScreen = () => {
     const notificationItems = new Array(10).fill(null);
+
+    // State to store the height of the ScrollView
     const [scrollViewHeight, setScrollViewHeight] = useState(0);
 
+    // Ref for the ScrollView component
     const scrollViewRef = useRef();
 
+    // useEffect hook to measure the height of the ScrollView after mounting
     useEffect(() => {
         if (scrollViewRef.current) {
             scrollViewRef.current.measure((x, y, width, height) => {
+                // Set the measured height to scrollViewHeight state
                 setScrollViewHeight(height);
             });
         }
@@ -21,17 +26,19 @@ const NotifikasiScreen = () => {
 
     return (
         <ScrollView
-            ref={scrollViewRef}
-            contentContainerStyle={styles.contentContainerStyle}
-            scrollEnabled={true}
-            showsVerticalScrollIndicator={false}
+            ref={scrollViewRef} // Attach ref to the ScrollView
+            contentContainerStyle={styles.contentContainerStyle} // Apply styles to the content container
+            scrollEnabled={true} // Allow vertical scrolling
+            showsVerticalScrollIndicator={false} // Hide vertical scroll indicator
         >
+            {/* Linear gradient background for the entire screen */}
             <LinearGradient
-                style={styles.linearGradient}
-                start={{ x: 0, y: -0.3 }} end={{ x: 0.9, y: 1.1 }}
-                colors={['#E0F8F0', '#FFFFFF', '#9BD5B5']}
-                locations={[0.1, 0.5, 1]}
+                style={styles.linearGradient} // Apply linear gradient styles
+                start={{ x: 0, y: -0.3 }} end={{ x: 0.9, y: 1.1 }} // Define gradient start and end points
+                colors={['#E0F8F0', '#FFFFFF', '#9BD5B5']} // Set gradient colors
+                locations={[0.1, 0.5, 1]} // Set gradient color distribution
             >
+                {/* Map through notificationItems array to render notification items */}
                 {notificationItems.map((_, index) => (
                     <View key={index} style={styles.badgeContainer}>
                         <View style={styles.iconContainer}>

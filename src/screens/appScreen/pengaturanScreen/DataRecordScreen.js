@@ -7,10 +7,13 @@ import Colors from '../../../constants/Colors';
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 
 const DataRecordScreen = () => {
+    // State to manage the height of the ScrollView
     const [scrollViewHeight, setScrollViewHeight] = useState(0);
 
+    // Reference to the ScrollView
     const scrollViewRef = useRef();
 
+    // Effect to measure the height of the ScrollView and set it to state
     useEffect(() => {
         if (scrollViewRef.current) {
             scrollViewRef.current.measure((x, y, width, height) => {
@@ -19,6 +22,7 @@ const DataRecordScreen = () => {
         }
     }, []);
 
+    // Data for the table
     const tableHead = ['Tanggal', 'Suhu', 'Kelembapan', 'pH', 'N', 'P', 'K'];
     const tableData = [
         ['2024-01-01', '25°C', '70%', '7.0', '10', '5', '15'],
@@ -29,7 +33,6 @@ const DataRecordScreen = () => {
         ['2024-01-06', '26°C', '72%', '7.2', '12', '6', '16'],
         ['2024-01-07', '25°C', '70%', '7.0', '10', '5', '15'],
     ];
-
 
     return (
         <ScrollView

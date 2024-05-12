@@ -7,10 +7,13 @@ import Fonts from '../../../constants/Fonts';
 import { Table, Row, Rows } from 'react-native-table-component';
 
 const KesuburanScreen = () => {
+    // State to manage the height of ScrollView
     const [scrollViewHeight, setScrollViewHeight] = useState(0);
 
+    // Reference to ScrollView
     const scrollViewRef = useRef();
 
+    // Effect to measure the height of ScrollView on mount
     useEffect(() => {
         if (scrollViewRef.current) {
             scrollViewRef.current.measure((x, y, width, height) => {
@@ -19,6 +22,7 @@ const KesuburanScreen = () => {
         }
     }, []);
 
+    // Data for the table
     const tableData = [
         ['Suhu', ':', '25 - 30 C'],
         ['Kelembapan', ':', '65 - 80 %'],
