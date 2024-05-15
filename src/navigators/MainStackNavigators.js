@@ -14,6 +14,7 @@ import Colors from '../constants/Colors';
 import Fonts from '../constants/Fonts';
 import LoginScreen from '../screens/authScreen/LoginScreen';
 import RegisterScreen from '../screens/authScreen/RegisterScreen';
+import InformasiRentangNilaiScreen from '../screens/appScreen/kesuburanScreen/InformasiRentangNilaiScreen';
 
 const Stack = createStackNavigator();
 const MainStackNavigators = () => {
@@ -38,8 +39,24 @@ const MainStackNavigators = () => {
                     options={{ headerShown: false }}
                 />
             </Stack.Group>
-            <Stack.Group>
+            <Stack.Group
+                screenOptions={{
+                    ...TransitionPresets.RevealFromBottomAndroid,
+                }}
+            >
                 <Stack.Screen name="KesuburanScreen" component={KesuburanScreen} />
+                <Stack.Screen
+                    name="InformasiRentangNilaiScreen"
+                    component={InformasiRentangNilaiScreen}
+                    options={{
+                        headerTitle: 'Kesuburan',
+                        headerTitleAlign: 'center',
+                        headerTitleStyle: styles.headerTitleStyle,
+                        headerStyle: styles.headerStyle,
+                        headerBackTitleVisible: false,
+                        headerTintColor: Colors.PRIMARY,
+                    }}
+                />
             </Stack.Group>
             <Stack.Group>
                 <Stack.Screen name="MonitoringScreen" component={MonitoringScreen} />

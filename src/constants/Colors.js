@@ -14,6 +14,7 @@ const Colors = {
     GREYPROFILE: '#D9D9D9',
     GREY: '#878686',
     LABELINPUTCOLOR: 'rgba(244, 252, 250, 1)',
+    WARNINGORANGE: 'rgba(239, 121, 12, 1)',
 };
 
 export default Colors;

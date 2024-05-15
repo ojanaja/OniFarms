@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Colors from '../../../constants/Colors';
 import Fonts from '../../../constants/Fonts';
@@ -30,15 +30,15 @@ const PengaturanScreen = () => {
     const [isFocus, setIsFocus] = useState(false); // State to track focus state of dropdown
     const [userName, setUserName] = useState(''); // State to store user's name
 
+    const user = firebase.auth().currentUser;
+
     // Fetching user data from Firestore
     useEffect(() => {
-        const user = firebase.auth().currentUser;
         const userRef = firestore().collection('users').doc(user.uid);
 
         userRef.get().then((doc) => {
             if (doc.exists) {
                 const userData = doc.data();
-                const userName = userData.name;
                 setUserName(userData.name);
             } else {
                 console.log('No such document!');
@@ -46,7 +46,7 @@ const PengaturanScreen = () => {
         }).catch((error) => {
             console.log('Error getting document:', error);
         });
-    }, []);
+    });
 
     // Function to handle sign out
     const handleSignOut = () => {

@@ -1,12 +1,15 @@
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import LinearGradient from 'react-native-linear-gradient'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Colors from '../../../constants/Colors';
 import Fonts from '../../../constants/Fonts';
 import { Table, Row, Rows } from 'react-native-table-component';
+import { useNavigation } from '@react-navigation/native';
 
 const KesuburanScreen = () => {
+    const navigation = useNavigation();
+
     // State to manage the height of ScrollView
     const [scrollViewHeight, setScrollViewHeight] = useState(0);
 
@@ -118,6 +121,12 @@ const KesuburanScreen = () => {
                         </Table>
                     </View>
                 </View>
+                <TouchableOpacity
+                    style={styles.informasiRentangNilaiButton}
+                    onPress={() => navigation.navigate('InformasiRentangNilaiScreen')}
+                >
+                    <Text style={styles.informasiRentangNilaiButtonText}>Informasi rentang nilai</Text>
+                </TouchableOpacity>
             </LinearGradient>
         </ScrollView>
     )
@@ -184,7 +193,7 @@ const styles = StyleSheet.create({
         color: Colors.RED
     },
     indicatorLevelSedangRectangle: {
-        backgroundColor: Colors.YELLOW,
+        backgroundColor: Colors.WARNINGORANGE,
         width: wp('6%'),
         height: hp('1%'),
         borderRadius: wp('10%')
@@ -192,7 +201,7 @@ const styles = StyleSheet.create({
     indicatorLevelSedangText: {
         fontFamily: Fonts.medium,
         fontSize: 10,
-        color: Colors.DARKERYELLOW
+        color: Colors.DARKERWARNINGORANGE
     },
     indicatorLevelNormalRectangle: {
         backgroundColor: Colors.GREEN,
@@ -273,7 +282,7 @@ const styles = StyleSheet.create({
         borderRadius: wp('100%')
     },
     warningIcon: {
-        backgroundColor: Colors.YELLOW,
+        backgroundColor: Colors.WARNINGORANGE,
         width: wp('14%'),
         height: hp('6.5%'),
         alignItems: 'center',
@@ -290,7 +299,6 @@ const styles = StyleSheet.create({
     },
     rentangNilaiContainer: {
         alignSelf: 'center',
-        marginBottom: hp('3%'),
     },
     rentangNilaiLabel: {
         backgroundColor: Colors.PRIMARY,
@@ -312,8 +320,8 @@ const styles = StyleSheet.create({
         height: hp('30%'),
         borderWidth: wp('0.3%'),
         borderColor: Colors.PRIMARY,
-        borderTopRightRadius: wp('4%'),
-        borderBottomRightRadius: wp('4%'),
+        borderTopRightRadius: wp('5%'),
+        borderBottomRightRadius: wp('5%'),
         elevation: 5,
         paddingTop: hp('1%')
     },
@@ -325,6 +333,19 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.regular,
         fontSize: 12,
         color: Colors.PRIMARY,
+    },
+    informasiRentangNilaiButton: {
+        alignSelf: 'flex-end',
+        width: wp('35%'),
+        marginRight: wp('4%'),
+        marginBottom: hp('2%'),
+        marginTop: hp('1%')
+    },
+    informasiRentangNilaiButtonText: {
+        fontFamily: Fonts.regular,
+        fontSize: 10,
+        color: Colors.PRIMARY,
+        textDecorationLine: 'underline',
     },
 });
 
