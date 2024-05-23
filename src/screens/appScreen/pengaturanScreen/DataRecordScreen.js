@@ -1,28 +1,15 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Fonts from '../../../constants/Fonts';
 import Colors from '../../../constants/Colors';
-import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
+import { Table, Row, Rows } from 'react-native-table-component';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import RNFS from 'react-native-fs';
+import DatePicker from 'react-native-date-picker';
 
 const DataRecordScreen = () => {
-    // State to manage the height of the ScrollView
-    const [scrollViewHeight, setScrollViewHeight] = useState(0);
-
-    // Reference to the ScrollView
-    const scrollViewRef = useRef();
-
-    // Effect to measure the height of the ScrollView and set it to state
-    useEffect(() => {
-        if (scrollViewRef.current) {
-            scrollViewRef.current.measure((x, y, width, height) => {
-                setScrollViewHeight(height);
-            });
-        }
-    }, []);
-
-    // Data for the table
     const tableHead = ['Tanggal', 'Suhu', 'Kelembapan', 'pH', 'N', 'P', 'K'];
     const tableData = [
         ['2024-01-01', '25°C', '70%', '7.0', '10', '5', '15'],
@@ -34,9 +21,78 @@ const DataRecordScreen = () => {
         ['2024-01-07', '25°C', '70%', '7.0', '10', '5', '15'],
     ];
 
+    const [fromDate, setFromDate] = useState(new Date());
+    const [toDate, setToDate] = useState(new Date());
+    const [isFromDatePickerVisible, setFromDatePickerVisibility] = useState(false);
+    const [isToDatePickerVisible, setToDatePickerVisibility] = useState(false);
+
+    const filterTableData = () => {
+        const filteredData = tableData.filter(row => {
+            const date = new Date(row[0]);
+            return date >= fromDate && date <= toDate;
+        });
+        return filteredData;
+    };
+
+    const generatePDF = async () => {
+        const filteredData = filterTableData();
+        const htmlContent = `
+            <html>
+                <head>
+                    <style>
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        }
+                        th, td {
+                            border: 1px solid black;
+                            text-align: center;
+                            padding: 8px;
+                        }
+                        th {
+                            background-color: ${Colors.PRIMARY};
+                            color: white;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2>Data Record</h2>
+                    <table>
+                        <tr>
+                            ${tableHead.map(header => `<th>${header}</th>`).join('')}
+                        </tr>
+                        ${filteredData.map(row => `
+                            <tr>
+                                ${row.map(cell => `<td>${cell}</td>`).join('')}
+                            </tr>
+                        `).join('')}
+                    </table>
+                </body>
+            </html>
+        `;
+
+        try {
+            // Generate PDF
+            const pdf = await RNHTMLtoPDF.convert({
+                html: htmlContent,
+                fileName: 'DataRecord',
+                base64: true,
+            });
+
+            // Define file path
+            const filePath = `${RNFS.DownloadDirectoryPath}/DataRecord.pdf`;
+
+            // Save PDF to the Downloads folder
+            await RNFS.writeFile(filePath, pdf.base64, 'base64');
+            Alert.alert('Success', `PDF saved to ${filePath}`);
+        } catch (error) {
+            Alert.alert('Error', 'Failed to generate PDF');
+            console.error(error);
+        }
+    };
+
     return (
         <ScrollView
-            ref={scrollViewRef}
             contentContainerStyle={styles.contentContainerStyle}
             showsVerticalScrollIndicator={false}
         >
@@ -50,18 +106,44 @@ const DataRecordScreen = () => {
                 <View style={styles.dateContainer}>
                     <View style={styles.dateButtonContainer}>
                         <Text style={styles.dateText}>Dari :</Text>
-                        <TouchableOpacity style={styles.dateButton}><Text style={styles.dateButtonText}>30/12/24</Text></TouchableOpacity>
+                        <TouchableOpacity style={styles.dateButton} onPress={() => setFromDatePickerVisibility(true)}>
+                            <Text style={styles.dateButtonText}>{fromDate.toLocaleDateString()}</Text>
+                        </TouchableOpacity>
+                        <DatePicker
+                            modal
+                            open={isFromDatePickerVisible}
+                            date={fromDate}
+                            onConfirm={(date) => {
+                                setFromDatePickerVisibility(false);
+                                setFromDate(date);
+                            }}
+                            onCancel={() => setFromDatePickerVisibility(false)}
+                            mode="date"
+                        />
                     </View>
                     <View style={styles.dateButtonContainer}>
                         <Text style={styles.dateText}>Sampai :</Text>
-                        <TouchableOpacity style={styles.dateButton}><Text style={styles.dateButtonText}>30/12/24</Text></TouchableOpacity>
+                        <TouchableOpacity style={styles.dateButton} onPress={() => setToDatePickerVisibility(true)}>
+                            <Text style={styles.dateButtonText}>{toDate.toLocaleDateString()}</Text>
+                        </TouchableOpacity>
+                        <DatePicker
+                            modal
+                            open={isToDatePickerVisible}
+                            date={toDate}
+                            onConfirm={(date) => {
+                                setToDatePickerVisibility(false);
+                                setToDate(date);
+                            }}
+                            onCancel={() => setToDatePickerVisibility(false)}
+                            mode="date"
+                        />
                     </View>
                 </View>
                 <Table style={styles.tableStyle} borderStyle={{ borderWidth: wp('0.3%'), borderColor: Colors.PRIMARY }}>
                     <Row data={tableHead} style={styles.headTable} textStyle={styles.headText} />
-                    <Rows data={tableData} textStyle={styles.textTable} />
+                    <Rows data={filterTableData()} textStyle={styles.textTable} />
                 </Table>
-                <TouchableOpacity style={styles.downloadButton}>
+                <TouchableOpacity style={styles.downloadButton} onPress={generatePDF}>
                     <Text style={styles.downloadButtonText}>Download as pdf</Text>
                 </TouchableOpacity>
             </LinearGradient>
@@ -135,7 +217,7 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.regular,
         fontSize: 10,
         color: Colors.BLACK,
-        textAlign: 'center'
+        textAlign: 'center',
     },
     downloadButton: {
         backgroundColor: Colors.PRIMARY,
