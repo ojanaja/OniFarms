@@ -3,7 +3,6 @@ import Moment from 'moment';
 
 const initialState = {
     alarms: [],
-
 };
 
 const alarmReducer = (state = initialState, action) => {

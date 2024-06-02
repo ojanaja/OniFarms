@@ -26,6 +26,8 @@ const ApplicationNavigators = () => {
                 if (storedAuthToken) {
                     setAuthToken(storedAuthToken);
                 }
+
+                console.log('No Token Stored');
             } catch (error) {
                 // Log error if fetching token fails
                 console.error('Error fetching auth token:', error);

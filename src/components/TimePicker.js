@@ -64,16 +64,17 @@ const TimePicker = (props) => {
             ticker: 'My Notification Message',
             id: generateId(),
             title: 'Alarm Ringing',
-            message: "Message Here",
+            message: 'Message Here',
             autoCancel: true,
             vibrate: true,
             vibration: 100,
             smallIcon: 'ic_launcher',
             largeIcon: 'ic_launcher',
             playSound: true,
+            soundName: 'sample.mp3',
             color: 'red',
             fire_date: fireDate,
-            date: { value: dateTime }
+            date: { value: dateTime },
         };
 
         props.add(alarmNotifData);
@@ -88,8 +89,10 @@ const TimePicker = (props) => {
             actions: ['Snooze', 'Stop Alarm'],
             importance: Importance.HIGH,
             playSound: true,
+            soundName: 'sample.mp3',
             allowWhileIdle: true,
             invokeApp: false,
+            repeatType: 'day',
         });
 
         PushNotification.configure({
@@ -107,6 +110,7 @@ const TimePicker = (props) => {
                         actions: ['Snooze', 'Stop Alarm'],
                         importance: Importance.HIGH,
                         playSound: true,
+                        soundName: 'sample.mp3',
                         allowWhileIdle: true,
                         invokeApp: false,
                     });
@@ -143,6 +147,7 @@ const TimePicker = (props) => {
                     }
                 }}
                 onCancel={hideDateTimePicker}
+                setIsVisible={hideDateTimePicker}
                 closeOnOverlayPress
                 modalTitle="Set Alarm Penyiraman 2"
                 styles={{
@@ -188,7 +193,7 @@ const mapDispatchToProps = dispatch => {
     return {
         add: alarmNotifData => {
             dispatch(addAlarm(alarmNotifData))
-        }
+        },
     };
 }
 

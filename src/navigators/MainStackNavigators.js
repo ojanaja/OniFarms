@@ -15,6 +15,7 @@ import Fonts from '../constants/Fonts';
 import LoginScreen from '../screens/authScreen/LoginScreen';
 import RegisterScreen from '../screens/authScreen/RegisterScreen';
 import InformasiRentangNilaiScreen from '../screens/appScreen/kesuburanScreen/InformasiRentangNilaiScreen';
+import MapViewScreen from '../screens/appScreen/monitoringScreen/MapViewScreen';
 
 const Stack = createStackNavigator();
 const MainStackNavigators = () => {
@@ -58,8 +59,24 @@ const MainStackNavigators = () => {
                     }}
                 />
             </Stack.Group>
-            <Stack.Group>
+            <Stack.Group
+                screenOptions={{
+                    ...TransitionPresets.SlideFromRightIOS,
+                }}
+            >
                 <Stack.Screen name="MonitoringScreen" component={MonitoringScreen} />
+                <Stack.Screen
+                    name="MapViewScreen"
+                    component={MapViewScreen}
+                    options={{
+                        headerTitle: 'Monitoring',
+                        headerTitleAlign: 'center',
+                        headerTitleStyle: styles.headerTitleStyle,
+                        headerStyle: styles.headerStyle,
+                        headerBackTitleVisible: false,
+                        headerTintColor: Colors.PRIMARY,
+                    }}
+                />
             </Stack.Group>
             <Stack.Group>
                 <Stack.Screen name="NotifikasiScreen" component={NotifikasiScreen} />

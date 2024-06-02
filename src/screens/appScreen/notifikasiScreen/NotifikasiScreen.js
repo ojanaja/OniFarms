@@ -1,67 +1,156 @@
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Colors from '../../../constants/Colors';
 import Fonts from '../../../constants/Fonts';
 
 const NotifikasiScreen = () => {
-    const notificationItems = new Array(10).fill(null);
+    const [notifications, setNotifications] = useState([]);
 
-    // State to store the height of the ScrollView
-    const [scrollViewHeight, setScrollViewHeight] = useState(0);
-
-    // Ref for the ScrollView component
-    const scrollViewRef = useRef();
-
-    // useEffect hook to measure the height of the ScrollView after mounting
-    useEffect(() => {
-        if (scrollViewRef.current) {
-            scrollViewRef.current.measure((x, y, width, height) => {
-                // Set the measured height to scrollViewHeight state
-                setScrollViewHeight(height);
-            });
+    // Function to load notifications from AsyncStorage
+    const loadNotifications = async () => {
+        try {
+            const storedNotifications = await AsyncStorage.getItem('notifications');
+            if (storedNotifications) {
+                setNotifications(JSON.parse(storedNotifications));
+            }
+        } catch (error) {
+            console.error('Failed to load notifications', error);
         }
-    }, []);
+    };
+
+    // Function to save notifications to AsyncStorage
+    const saveNotifications = async (newNotifications) => {
+        try {
+            await AsyncStorage.setItem('notifications', JSON.stringify(newNotifications));
+        } catch (error) {
+            console.error('Failed to save notifications', error);
+        }
+    };
+
+    // Request permission for notifications and get the token
+    useEffect(() => {
+        const requestUserPermission = async () => {
+            const authStatus = await messaging().requestPermission();
+            const enabled =
+                authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+                authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+            if (enabled) {
+                console.log('Authorization status:', authStatus);
+            }
+        };
+
+        requestUserPermission();
+
+        // Load notifications from storage when the component mounts
+        loadNotifications();
+
+        // Handle foreground messages
+        const unsubscribe = messaging().onMessage(async remoteMessage => {
+            const now = new Date();
+            const formattedTime = now.toTimeString().split(' ')[0]; // Extract HH:MM:SS
+            const formattedDate = now.toLocaleDateString(); // Extract MM/DD/YYYY
+            const newNotification = { ...remoteMessage, time: formattedTime, date: formattedDate };
+            const updatedNotifications = [...notifications, newNotification];
+            setNotifications(updatedNotifications);
+            saveNotifications(updatedNotifications);
+        });
+
+        // Handle background and quit state messages
+        messaging().onNotificationOpenedApp(remoteMessage => {
+            const now = new Date();
+            const formattedTime = now.toTimeString().split(' ')[0]; // Extract HH:MM:SS
+            const formattedDate = now.toLocaleDateString(); // Extract MM/DD/YYYY
+            const newNotification = { ...remoteMessage, time: formattedTime, date: formattedDate };
+            const updatedNotifications = [...notifications, newNotification];
+            setNotifications(updatedNotifications);
+            saveNotifications(updatedNotifications);
+        });
+
+        messaging().getInitialNotification().then(remoteMessage => {
+            if (remoteMessage) {
+                const now = new Date();
+                const formattedTime = now.toTimeString().split(' ')[0]; // Extract HH:MM:SS
+                const formattedDate = now.toLocaleDateString(); // Extract MM/DD/YYYY
+                const newNotification = { ...remoteMessage, time: formattedTime, date: formattedDate };
+                const updatedNotifications = [...notifications, newNotification];
+                setNotifications(updatedNotifications);
+                saveNotifications(updatedNotifications);
+            }
+        });
+
+        return unsubscribe;
+    }, [notifications]);
+
+    const renderItem = ({ item }) => {
+        let iconSource = require('../../../../assets/images/MenyiramIcon.png');
+        let badgeStyle = styles.badgeContainer;
+
+        // Change icon and style based on the category
+        switch (item.data.category) {
+            case 'menyiram':
+                iconSource = require('../../../../assets/images/MenyiramIcon.png');
+                badgeStyle = { ...styles.badgeContainer };
+                break;
+            case 'pH':
+                iconSource = require('../../../../assets/images/PhIcon.png');
+                badgeStyle = { ...styles.badgeContainer };
+                break;
+            case 'suhu':
+                iconSource = require('../../../../assets/images/SuhuIcon.png');
+                badgeStyle = { ...styles.badgeContainer };
+                break;
+            default:
+                break;
+        }
+
+        return (
+            <View style={badgeStyle}>
+                <View style={styles.iconContainer}>
+                    <Image style={styles.icon} source={iconSource} />
+                </View>
+                <View style={styles.DescContainer}>
+                    <Text style={styles.title}>{item.notification.title}</Text>
+                    <Text style={styles.subTitle}>{item.notification.body}</Text>
+                </View>
+                <View style={styles.dateContainer}>
+                    <Text style={styles.time}>{item.time}</Text>
+                    <Text style={styles.date}>{item.date}</Text>
+                </View>
+            </View>
+        );
+    };
 
     return (
-        <ScrollView
-            ref={scrollViewRef} // Attach ref to the ScrollView
-            contentContainerStyle={styles.contentContainerStyle} // Apply styles to the content container
-            scrollEnabled={true} // Allow vertical scrolling
-            showsVerticalScrollIndicator={false} // Hide vertical scroll indicator
+        <LinearGradient
+            style={styles.linearGradient}
+            start={{ x: 0, y: -0.3 }} end={{ x: 0.9, y: 1.1 }}
+            colors={['#E0F8F0', '#FFFFFF', '#9BD5B5']}
+            locations={[0.1, 0.5, 1]}
         >
-            {/* Linear gradient background for the entire screen */}
-            <LinearGradient
-                style={styles.linearGradient} // Apply linear gradient styles
-                start={{ x: 0, y: -0.3 }} end={{ x: 0.9, y: 1.1 }} // Define gradient start and end points
-                colors={['#E0F8F0', '#FFFFFF', '#9BD5B5']} // Set gradient colors
-                locations={[0.1, 0.5, 1]} // Set gradient color distribution
-            >
-                {/* Map through notificationItems array to render notification items */}
-                {notificationItems.map((_, index) => (
-                    <View key={index} style={styles.badgeContainer}>
-                        <View style={styles.iconContainer}>
-                            <Image style={styles.icon} source={require('../../../../assets/images/MenyiramIcon.png')} />
-                        </View>
-                        <View style={styles.DescContainer}>
-                            <Text style={styles.title}>Saatnya menyiram tanamanmu!</Text>
-                            <Text style={styles.subTitle}>Pastikan untuk memberi air pada waktu yang telah ditentukan.</Text>
-                        </View>
-                        <View style={styles.dateContainer}>
-                            <Text style={styles.time}>11 : 00</Text>
-                            <Text style={styles.date}>23/12/24</Text>
-                        </View>
-                    </View>
-                ))}
-            </LinearGradient>
-        </ScrollView>
-    )
+            <FlatList
+                data={notifications}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+                contentContainerStyle={styles.contentContainerStyle}
+                showsVerticalScrollIndicator={false}
+            />
+        </LinearGradient>
+    );
 }
 
 const styles = StyleSheet.create({
-    contentContainerStyle: {},
-    linearGradient: {},
+    contentContainerStyle: {
+        paddingBottom: hp('2%')
+    },
+    linearGradient: {
+        flex: 1,
+        paddingTop: hp('2%'),
+    },
     badgeContainer: {
         backgroundColor: Colors.WHITE,
         marginVertical: hp('1%'),
@@ -99,7 +188,7 @@ const styles = StyleSheet.create({
         fontSize: 9,
     },
     dateContainer: {
-        alignItems: 'center'
+        alignItems: 'center',
     },
     time: {
         fontFamily: Fonts.regular,

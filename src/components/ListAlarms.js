@@ -19,6 +19,14 @@ import Fonts from '../constants/Fonts';
 const ListAlarms = (props) => {
     const [isOn, setIsOn] = useState(true);
     const keyExtractor = (item, index) => index.toString();
+
+    const handleToggle = (item) => {
+        setIsOn(!isOn);
+        PushNotification.cancelLocalNotification(item.id);
+        props.delete(item.id);
+        console.log('Alarm Deleted with ID: ' + item.id);
+    };
+
     const renderItem = ({ item, index }) => {
         return (
             <View style={styles.jadwalPenyiramanContainer}>
@@ -34,11 +42,7 @@ const ListAlarms = (props) => {
                     onColor="green"
                     offColor="red"
                     size="medium"
-                    onToggle={() => [
-                        PushNotification.cancelLocalNotification(item.alarmNotifData.id),
-                        props.delete(item.value),
-                        console.log('Alarm Deleted with ID: ' + item.alarmNotifData.id),
-                    ]}
+                    onToggle={handleToggle}
                     thumbOnStyle={{ backgroundColor: Colors.WHITE }}
                     thumbOffStyle={{ backgroundColor: Colors.GREY }}
                     trackOffStyle={{ backgroundColor: Colors.WHITE, borderColor: Colors.GREY, borderWidth: 1 }}

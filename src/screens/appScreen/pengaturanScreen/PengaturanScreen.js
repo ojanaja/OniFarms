@@ -139,11 +139,10 @@ const PengaturanScreen = () => {
                             <Octicons size={24} name="chevron-right" color={Colors.PRIMARY} />
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={styles.buttonStyle}
+                            style={styles.logOutbuttonStyle}
                             onPress={handleSignOut}
                         >
-                            <Text style={styles.buttonText}>Sign Out</Text>
-                            <Octicons size={24} name="chevron-right" color={Colors.PRIMARY} />
+                            <Text style={[styles.buttonText, { textDecorationLine: 'underline', fontFamily: Fonts.bold, fontSize: 14 }]}>Logout</Text>
                         </TouchableOpacity>
                     </LinearGradient>
                 </View>
@@ -252,6 +251,11 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.semibold,
         fontSize: 11,
         color: Colors.PRIMARY,
+    },
+    logOutbuttonStyle: {
+        alignSelf: 'center',
+        justifyContent: 'flex-end',
+        height: hp('30%'),
     },
 
 });

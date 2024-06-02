@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, ImageBackground, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -6,52 +6,9 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Colors from '../../../constants/Colors';
 import Fonts from '../../../constants/Fonts';
 import LinearGradient from 'react-native-linear-gradient';
-import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Collapse, CollapseHeader, CollapseBody, AccordionList } from 'accordion-collapse-react-native';
 import { Table, Row, Rows } from 'react-native-table-component';
-
-/**
- * MyMapView component renders a MapView component with a marker and callout for a given location.
- * It takes pinPointData as a prop, containing latitude, longitude, title, and description of the location.
- */
-const MyMapView = () => {
-    const [pinPointData] = useState({
-        latitude: 51.5074,
-        longitude: -0.1278,
-        title: 'Your Location Name',
-        description: 'This is a note about the location.',
-    });
-
-    const initialRegion = {
-        latitude: pinPointData.latitude,
-        longitude: pinPointData.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-    };
-
-    return (
-        <MapView
-            provider={PROVIDER_GOOGLE}
-            style={styles.map}
-            initialRegion={initialRegion}
-        >
-            <Marker
-                coordinate={{
-                    latitude: pinPointData.latitude,
-                    longitude: pinPointData.longitude,
-                }}
-                title={pinPointData.title}
-            >
-                <Callout>
-                    <View style={styles.calloutContainer}>
-                        <Text style={styles.calloutText}>{pinPointData.title}</Text>
-                        <Text style={styles.calloutSubtext}>{pinPointData.description}</Text>
-                    </View>
-                </Callout>
-            </Marker>
-        </MapView>
-    );
-};
+import { useNavigation } from '@react-navigation/native';
 
 /**
  * MonitoringScreen component displays a screen with various monitoring data and a map.
@@ -59,6 +16,8 @@ const MyMapView = () => {
  */
 const MonitoringScreen = () => {
     const [isOpen, setIsOpen] = useState(false);
+
+    const navigation = useNavigation();
 
     // Function to toggle the collapse state
     const toggleCollapse = () => {
@@ -175,17 +134,38 @@ const MonitoringScreen = () => {
                 <LinearGradient
                     style={styles.linearGradient}
                     start={{ x: 0, y: -0.3 }} end={{ x: 0.9, y: 1.1 }}
-                    colors={['#E0F8F0', '#FFFFFF', '#9BD5B5']}
+                    colors={['#BADFD3', '#FFFFFF', '#9BD5B5']}
                     locations={[0.1, 0.5, 1]}
                 >
                     {/* Header for node monitoring */}
+                    <View style={styles.rectangle} />
                     <View style={styles.nodeMonitorHeader}>
-                        <Text style={styles.nodeMonitorText}>Monitor per Bendengan</Text>
+                        <View style={styles.nodeMonitorHeaderTextContainer}>
+                            <Text style={styles.nodeMonitorHeaderText}>Suhu saat ini</Text>
+                            <Text style={styles.nodeMonitorHeaderTextDate}>18 Mei 2024</Text>
+                        </View>
+                        <View style={styles.nodeMonitorHeaderSuhuContainer}>
+                            <Text style={styles.nodeMonitorHeaderSuhu}>55</Text>
+                            <Text style={[styles.nodeMonitorHeaderSuhu, { fontSize: 16, marginTop: hp('0.5%') }]}>°C</Text>
+                        </View>
                     </View>
-                    {/* MapView component */}
-                    <MyMapView />
                     {/* Accordion for bendengan data */}
                     <View style={styles.accordionContainer}>
+                        <View style={styles.bendenganHeaderContainer}>
+                            <View style={styles.bendenganHeaderTextContainer}>
+                                <Text style={styles.bendenganHeaderText}>Monitor per Bendengan</Text>
+                                <TouchableOpacity
+                                    onPress={() => navigation.navigate('MapViewScreen')}
+                                >
+                                    <Text style={styles.lihatPetaText}>Lihat peta</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <TouchableOpacity
+                                onPress={() => { }}
+                            >
+                                <Image source={require('../../../../assets/images/IconPlusBendengan.png')} />
+                            </TouchableOpacity>
+                        </View>
                         <Collapse
                             onToggle={toggleCollapse}
                             isExpanded={isOpen}
@@ -347,18 +327,62 @@ const styles = StyleSheet.create({
     nodeMonitorHeader: {
         paddingHorizontal: wp('5%'),
         paddingVertical: hp('1%'),
+        borderBottomWidth: wp('0.2%'),
+        borderBottomColor: Colors.GREY,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
-    nodeMonitorText: {
-        fontFamily: Fonts.semibold,
-        fontSize: 16,
+    nodeMonitorHeaderTextContainer: {
+        gap: hp('0.5%')
+    },
+    nodeMonitorHeaderText: {
+        fontFamily: Fonts.bold,
+        fontSize: 14,
         color: Colors.PRIMARY,
     },
-    map: {
-        width: wp('100%'),
-        height: hp('30%'),
+    nodeMonitorHeaderTextDate: {
+        fontFamily: Fonts.medium,
+        fontSize: 10,
+        color: Colors.BLACK,
+    },
+    nodeMonitorHeaderSuhuContainer: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+    },
+    nodeMonitorHeaderSuhu: {
+        fontFamily: Fonts.regular,
+        fontSize: 36,
+        color: Colors.BLACK,
     },
     accordionContainer: {
-        marginVertical: hp('3%'),
+        marginVertical: hp('2%'),
+    },
+    bendenganHeaderContainer: {
+        paddingHorizontal: wp('5%'),
+        paddingVertical: hp('1%'),
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    bendenganHeaderTextContainer: {},
+    bendenganHeaderText: {
+        fontFamily: Fonts.bold,
+        fontSize: 14,
+        color: Colors.PRIMARY,
+    },
+    lihatPetaText: {
+        fontFamily: Fonts.regular,
+        fontSize: 11,
+        color: Colors.PRIMARY,
+        textDecorationLine: 'underline',
+    },
+    rectangle: {
+        backgroundColor: Colors.RECTANGLECOLOR,
+        width: wp('15%'),
+        height: hp('1%'),
+        alignSelf: 'center',
+        marginTop: hp('2%'),
+        borderRadius: wp('100%'),
     },
     accordionHeader: {
         backgroundColor: Colors.PRIMARY,
@@ -370,6 +394,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: wp('5%'),
         borderBottomRightRadius: wp('5%'),
         elevation: 5,
+        marginVertical: hp('1%')
     },
     accordionHeaderContainer: {
         flexDirection: 'row',
@@ -399,18 +424,6 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.regular,
         fontSize: 12,
         color: Colors.PRIMARY,
-    },
-    calloutContainer: {
-        padding: 10,
-        backgroundColor: '#fff',
-        borderRadius: 5,
-    },
-    calloutText: {
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    calloutSubtext: {
-        fontSize: 14,
     },
 });
 
