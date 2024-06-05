@@ -1,30 +1,26 @@
 import { View, Text, StyleSheet, Image, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Colors from '../../../constants/Colors';
 import Fonts from '../../../constants/Fonts';
 import LinearGradient from 'react-native-linear-gradient';
-import { Collapse, CollapseHeader, CollapseBody, AccordionList } from 'accordion-collapse-react-native';
-import { Table, Row, Rows } from 'react-native-table-component';
+import { Collapse, CollapseHeader, CollapseBody } from 'accordion-collapse-react-native';
+import { Table, Rows } from 'react-native-table-component';
 import { useNavigation } from '@react-navigation/native';
+import ActionSheet from 'react-native-actions-sheet';
 
-/**
- * MonitoringScreen component displays a screen with various monitoring data and a map.
- * It includes temperature, humidity, pH, and NPK levels, along with an accordion list for monitoring per location.
- */
 const MonitoringScreen = () => {
     const [isOpen, setIsOpen] = useState(false);
-
+    const [isActionSheetVisible, setIsActionSheetVisible] = useState(true);
+    const actionSheetRef = useRef(null);
     const navigation = useNavigation();
 
-    // Function to toggle the collapse state
     const toggleCollapse = () => {
         setIsOpen(!isOpen);
     };
 
-    // Data for the monitoring table
     const tableData = [
         ['Suhu', ':', '25 - 30 C'],
         ['Kelembapan', ':', '65 - 80 %'],
@@ -33,6 +29,12 @@ const MonitoringScreen = () => {
         ['Phosphor', ':', '100 - 200ppm'],
         ['Kalium', ':', '100 - 200ppm'],
     ];
+
+    useEffect(() => {
+        if (actionSheetRef.current) {
+            actionSheetRef.current?.show();
+        }
+    }, []);
 
     return (
         <ScrollView
@@ -129,27 +131,21 @@ const MonitoringScreen = () => {
                 </View>
             </ImageBackground>
 
-            {/* Node monitoring section */}
-            <View style={styles.nodeMonitorContainer}>
+            {/* Action Sheet for bendenganContainer */}
+            <ActionSheet
+                ref={actionSheetRef}
+                gestureEnabled={true}
+                snapPoints={[hp('20%')]}
+                closable={false}
+                backgroundInteractionEnabled={true}
+                isModal={true}
+            >
                 <LinearGradient
                     style={styles.linearGradient}
                     start={{ x: 0, y: -0.3 }} end={{ x: 0.9, y: 1.1 }}
-                    colors={['#BADFD3', '#FFFFFF', '#9BD5B5']}
+                    colors={['#E0F8F0', '#FFFFFF', '#9BD5B5']}
                     locations={[0.1, 0.5, 1]}
                 >
-                    {/* Header for node monitoring */}
-                    <View style={styles.rectangle} />
-                    <View style={styles.nodeMonitorHeader}>
-                        <View style={styles.nodeMonitorHeaderTextContainer}>
-                            <Text style={styles.nodeMonitorHeaderText}>Suhu saat ini</Text>
-                            <Text style={styles.nodeMonitorHeaderTextDate}>18 Mei 2024</Text>
-                        </View>
-                        <View style={styles.nodeMonitorHeaderSuhuContainer}>
-                            <Text style={styles.nodeMonitorHeaderSuhu}>55</Text>
-                            <Text style={[styles.nodeMonitorHeaderSuhu, { fontSize: 16, marginTop: hp('0.5%') }]}>°C</Text>
-                        </View>
-                    </View>
-                    {/* Accordion for bendengan data */}
                     <View style={styles.accordionContainer}>
                         <View style={styles.bendenganHeaderContainer}>
                             <View style={styles.bendenganHeaderTextContainer}>
@@ -187,7 +183,7 @@ const MonitoringScreen = () => {
                         </Collapse>
                     </View>
                 </LinearGradient>
-            </View>
+            </ActionSheet>
         </ScrollView>
     )
 }
@@ -197,7 +193,7 @@ const styles = StyleSheet.create({
         width: wp('100%'),
     },
     backgroundImage: {
-        height: hp('70%'),
+        height: hp('100%'),
         width: wp('100%'),
     },
     headerContainer: {
@@ -318,11 +314,6 @@ const styles = StyleSheet.create({
         color: Colors.BLACK,
     },
     linearGradient: {
-        marginTop: hp('-2%'),
-        height: hp('100%'),
-        width: wp('100%'),
-        borderTopRightRadius: wp('4%'),
-        borderTopLeftRadius: wp('4%'),
     },
     nodeMonitorHeader: {
         paddingHorizontal: wp('5%'),
@@ -425,7 +416,9 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: Colors.PRIMARY,
     },
+    bendenganActionSheetContainer: {
+        padding: 20,
+    },
 });
 
 export default MonitoringScreen;
-

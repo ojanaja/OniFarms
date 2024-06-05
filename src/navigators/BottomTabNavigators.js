@@ -1,4 +1,4 @@
-import { StyleSheet, Image } from 'react-native';
+import { StyleSheet, Image, View } from 'react-native';
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MonitoringScreen from '../screens/appScreen/monitoringScreen/MonitoringScreen';
@@ -8,6 +8,7 @@ import PengaturanScreen from '../screens/appScreen/pengaturanScreen/PengaturanSc
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Colors from '../constants/Colors';
 import Fonts from '../constants/Fonts';
+import { Text } from 'react-native-svg';
 
 const monitoringIcon = require('../../assets/images/MonitoringInactive.png');
 const notifikasiIcon = require('../../assets/images/NotifikasiInactive.png');
@@ -47,7 +48,12 @@ const BottomTabNavigators = () => {
                 component={NotifikasiScreen}
                 options={{
                     tabBarIcon: ({ color, size }) => (
-                        <Image source={notifikasiIcon} style={{ width: size * 0.85, height: size * 1, tintColor: color }} />
+                        <View>
+                            <Image source={notifikasiIcon} style={{ width: size * 0.85, height: size * 1, tintColor: color }} />
+                            <View style={styles.badge}>
+                                {/* <Text style={styles.badgeText}>10</Text> */}
+                            </View>
+                        </View>
                     )
                 }}
             />
@@ -98,7 +104,22 @@ const styles = StyleSheet.create({
         height: hp('5%'),
         justifyContent: 'center',
         alignSelf: 'center'
-    }
+    },
+    badge: {
+        width: wp('3%'),
+        height: wp('3%'),
+        borderRadius: wp('5%'),
+        backgroundColor: Colors.RED,
+        position: 'absolute',
+        top: hp('-1%'),
+        right: wp('-3%'),
+        alignItems: 'center',
+    },
+    badgeText: {
+        color: Colors.WHITE,
+        fontFamily: Fonts.bold,
+        fontSize: 10,
+    },
 })
 
 export default BottomTabNavigators;
