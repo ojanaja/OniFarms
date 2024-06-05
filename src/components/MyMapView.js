@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MapView, { Callout, Marker, UrlTile } from 'react-native-maps';
+import MapView, { Callout, Marker, PROVIDER_DEFAULT, UrlTile } from 'react-native-maps';
 import { Text, StyleSheet, View } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
@@ -34,14 +34,15 @@ const MyMapView = ({ onPress }) => {
 
     return (
         <MapView
-            provider={null}
+            provider={PROVIDER_DEFAULT}
             style={styles.map}
             initialRegion={initialRegion}
             onPress={onPress}
         >
             <UrlTile
-                urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                urlTemplate="https://a.tile.openstreetmap.org/10/163/395.png"
                 maximumZ={19}
+                flipY={false}
             />
             {markers.map((marker, index) => (
                 <Marker

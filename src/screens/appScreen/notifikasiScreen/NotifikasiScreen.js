@@ -6,6 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Colors from '../../../constants/Colors';
 import Fonts from '../../../constants/Fonts';
+import { notificationStore } from '../../../store/notificationStore';
 
 const NotifikasiScreen = () => {
     const [notifications, setNotifications] = useState([]);
@@ -22,15 +23,6 @@ const NotifikasiScreen = () => {
         }
     };
 
-    // Function to save notifications to AsyncStorage
-    const saveNotifications = async (newNotifications) => {
-        try {
-            await AsyncStorage.setItem('notifications', JSON.stringify(newNotifications));
-        } catch (error) {
-            console.error('Failed to save notifications', error);
-        }
-    };
-
     // Request permission for notifications and get the token
     useEffect(() => {
         const requestUserPermission = async () => {
@@ -44,10 +36,15 @@ const NotifikasiScreen = () => {
             }
         };
 
-        requestUserPermission();
+        const fetchData = async () => {
+            // Load notifications from storage when the component mounts
+            await loadNotifications();
+            // Mark all notifications as read
+            markAllAsRead();
+        };
 
-        // Load notifications from storage when the component mounts
-        loadNotifications();
+        requestUserPermission();
+        fetchData();
 
         // Handle foreground messages
         const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -57,7 +54,7 @@ const NotifikasiScreen = () => {
             const newNotification = { ...remoteMessage, time: formattedTime, date: formattedDate };
             const updatedNotifications = [...notifications, newNotification];
             setNotifications(updatedNotifications);
-            saveNotifications(updatedNotifications);
+            notificationStore((state) => state.increaseNotifications());
         });
 
         // Handle background and quit state messages
@@ -68,7 +65,7 @@ const NotifikasiScreen = () => {
             const newNotification = { ...remoteMessage, time: formattedTime, date: formattedDate };
             const updatedNotifications = [...notifications, newNotification];
             setNotifications(updatedNotifications);
-            saveNotifications(updatedNotifications);
+            notificationStore((state) => state.increaseNotifications());
         });
 
         messaging().getInitialNotification().then(remoteMessage => {
@@ -79,12 +76,18 @@ const NotifikasiScreen = () => {
                 const newNotification = { ...remoteMessage, time: formattedTime, date: formattedDate };
                 const updatedNotifications = [...notifications, newNotification];
                 setNotifications(updatedNotifications);
-                saveNotifications(updatedNotifications);
+                notificationStore((state) => state.increaseNotifications());
             }
         });
 
         return unsubscribe;
     }, [notifications]);
+
+    // Function to mark all notifications as read
+    const markAllAsRead = () => {
+        notificationStore((state) => state.removeAllNotifications());
+        setNotifications([]);
+    };
 
     const renderItem = ({ item }) => {
         let iconSource = require('../../../../assets/images/MenyiramIcon.png');

@@ -9,6 +9,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import Colors from '../constants/Colors';
 import Fonts from '../constants/Fonts';
 import { Text } from 'react-native-svg';
+import { notificationStore } from '../store/notificationStore';
 
 const monitoringIcon = require('../../assets/images/MonitoringInactive.png');
 const notifikasiIcon = require('../../assets/images/NotifikasiInactive.png');
@@ -18,6 +19,11 @@ const pengaturanIcon = require('../../assets/images/PengaturanInactive.png');
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigators = () => {
+    const notificationsCounter = notificationStore((state) => state.notifications.length);
+
+    console.log('Notifications', notificationsCounter);
+
+
     return (
         <Tab.Navigator
             initialRouteName="Monitoring"
@@ -50,9 +56,12 @@ const BottomTabNavigators = () => {
                     tabBarIcon: ({ color, size }) => (
                         <View>
                             <Image source={notifikasiIcon} style={{ width: size * 0.85, height: size * 1, tintColor: color }} />
-                            <View style={styles.badge}>
-                                {/* <Text style={styles.badgeText}>10</Text> */}
-                            </View>
+                            {notificationsCounter >= 1 && (
+                                <View style={styles.badge}>
+                                    {/* <Text style={styles.badgeText}>10</Text> */}
+                                </View>
+                            )}
+
                         </View>
                     )
                 }}

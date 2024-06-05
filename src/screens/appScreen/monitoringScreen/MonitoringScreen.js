@@ -135,10 +135,11 @@ const MonitoringScreen = () => {
             <ActionSheet
                 ref={actionSheetRef}
                 gestureEnabled={true}
-                snapPoints={[hp('20%')]}
                 closable={false}
                 backgroundInteractionEnabled={true}
-                isModal={true}
+                snapPoints={[hp('20%')]}
+                containerStyle={styles.actionSheetContainer}
+                springOffset={100}
             >
                 <LinearGradient
                     style={styles.linearGradient}
@@ -191,6 +192,9 @@ const MonitoringScreen = () => {
 const styles = StyleSheet.create({
     contentContainerStyle: {
         width: wp('100%'),
+    },
+    actionSheetContainer: { backgroundColor: '#E0F8F0' },
+    linearGradient: {
     },
     backgroundImage: {
         height: hp('100%'),
@@ -313,8 +317,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: Colors.BLACK,
     },
-    linearGradient: {
-    },
     nodeMonitorHeader: {
         paddingHorizontal: wp('5%'),
         paddingVertical: hp('1%'),
@@ -347,7 +349,7 @@ const styles = StyleSheet.create({
         color: Colors.BLACK,
     },
     accordionContainer: {
-        marginVertical: hp('2%'),
+        marginVertical: hp('1%'),
     },
     bendenganHeaderContainer: {
         paddingHorizontal: wp('5%'),
@@ -366,14 +368,6 @@ const styles = StyleSheet.create({
         fontSize: 11,
         color: Colors.PRIMARY,
         textDecorationLine: 'underline',
-    },
-    rectangle: {
-        backgroundColor: Colors.RECTANGLECOLOR,
-        width: wp('15%'),
-        height: hp('1%'),
-        alignSelf: 'center',
-        marginTop: hp('2%'),
-        borderRadius: wp('100%'),
     },
     accordionHeader: {
         backgroundColor: Colors.PRIMARY,
