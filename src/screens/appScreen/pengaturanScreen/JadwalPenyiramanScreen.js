@@ -8,6 +8,7 @@ import PushNotification, { Importance } from 'react-native-push-notification';
 import ListAlarms from '../../../components/ListAlarms';
 import TimePicker from '../../../components/TimePicker';
 import { PermissionsAndroid, Platform } from 'react-native';
+import { notificationStore } from '../../../store/notificationStore';
 
 class JadwalPenyiramanScreen extends Component {
     constructor(props) {
@@ -35,38 +36,42 @@ class JadwalPenyiramanScreen extends Component {
     };
 
     handleNotification = () => {
+        const { addNotification, saveNotifications, notifications } = notificationStore.getState();
 
         PushNotification.cancelAllLocalNotifications();
 
-
-        PushNotification.localNotificationSchedule({
-            channelId: 'test-channel',
+        const newNotification = {
+            id: Date.now().toString(),
+            channelId: 'alarm-channel',
             title: 'Alarm Ringing',
-
             message: 'Message Here',
-            actions: ['Accept', 'Reject'],
             date: new Date(Date.now() + 100),
             allowWhileIdle: true,
             invokeApp: false,
+        };
 
-            //repeatTime: 2,
-        });
+        PushNotification.localNotificationSchedule(newNotification);
+
+        addNotification(newNotification);
+        saveNotifications([...notifications, newNotification]);
 
         PushNotification.configure({
             onAction: function (notification) {
                 if (notification.action === 'Accept') {
                     console.log('Alarm Snoozed');
-                }
-                else if (notification.action === 'Reject') {
-                    console.log('Alarm Stoped');
-                    //PushNotification.cancelAllLocalNotifications();
-                }
-                else {
+                } else if (notification.action === 'Reject') {
+                    console.log('Alarm Stopped');
+                } else {
                     console.log('Notification opened');
                 }
             },
-            actions: ["Accept", 'Reject'],
+            actions: ['Accept', 'Reject'],
         });
+    };
+
+    loadNotifications = async () => {
+        const { loadNotifications } = notificationStore.getState();
+        await loadNotifications();
     };
 
     render() {

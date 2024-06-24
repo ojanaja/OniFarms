@@ -2,10 +2,11 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const notificationStore = create((set) => ({
-    notifications: 0,
-    increaseNotifications: () => set((state) => ({ notifications: state.notifications + 1 })),
-    removeAllNotifications: () => set({ notifications: 0 }),
-    updateNotifications: (newNotifications) => set({ notifications: newNotifications }),
+    notifications: [],
+    addNotification: (notification) => set((state) => ({ notifications: [...state.notifications, notification] })),
+    removeNotification: (id) => set((state) => ({ notifications: state.notifications.filter(n => n.id !== id) })),
+    setNotifications: (notifications) => set({ notifications }),
+
     // Async function to save notifications state
     saveNotifications: async (notifications) => {
         try {

@@ -9,21 +9,18 @@ import Fonts from '../../../constants/Fonts';
 import { notificationStore } from '../../../store/notificationStore';
 
 const NotifikasiScreen = () => {
-    const [notifications, setNotifications] = useState([]);
+    const { notifications, addNotification, setNotifications, removeAllNotifications, saveNotifications, loadNotifications } = notificationStore();
 
     // Function to load notifications from AsyncStorage
-    const loadNotifications = async () => {
-        try {
-            const storedNotifications = await AsyncStorage.getItem('notifications');
-            if (storedNotifications) {
-                setNotifications(JSON.parse(storedNotifications));
-            }
-        } catch (error) {
-            console.error('Failed to load notifications', error);
-        }
-    };
+    useEffect(() => {
+        const initializeNotifications = async () => {
+            await loadNotifications();
+            await markAllAsRead();
+        };
 
-    // Request permission for notifications and get the token
+        initializeNotifications();
+    }, []);
+
     useEffect(() => {
         const requestUserPermission = async () => {
             const authStatus = await messaging().requestPermission();
@@ -36,56 +33,41 @@ const NotifikasiScreen = () => {
             }
         };
 
-        const fetchData = async () => {
-            // Load notifications from storage when the component mounts
-            await loadNotifications();
-            // Mark all notifications as read
-            markAllAsRead();
+        const handleForegroundMessage = async (remoteMessage) => {
+            const newNotification = formatNotification(remoteMessage);
+            addNotification(newNotification);
+            saveNotifications([...notifications, newNotification]);
+        };
+
+        const handleBackgroundMessage = async (remoteMessage) => {
+            const newNotification = formatNotification(remoteMessage);
+            addNotification(newNotification);
+            saveNotifications([...notifications, newNotification]);
         };
 
         requestUserPermission();
-        fetchData();
 
-        // Handle foreground messages
-        const unsubscribe = messaging().onMessage(async remoteMessage => {
-            const now = new Date();
-            const formattedTime = now.toTimeString().split(' ')[0]; // Extract HH:MM:SS
-            const formattedDate = now.toLocaleDateString(); // Extract MM/DD/YYYY
-            const newNotification = { ...remoteMessage, time: formattedTime, date: formattedDate };
-            const updatedNotifications = [...notifications, newNotification];
-            setNotifications(updatedNotifications);
-            notificationStore((state) => state.increaseNotifications());
-        });
+        const unsubscribeForeground = messaging().onMessage(handleForegroundMessage);
+        const unsubscribeBackground = messaging().onNotificationOpenedApp(handleBackgroundMessage);
+        messaging().getInitialNotification().then(handleBackgroundMessage);
 
-        // Handle background and quit state messages
-        messaging().onNotificationOpenedApp(remoteMessage => {
-            const now = new Date();
-            const formattedTime = now.toTimeString().split(' ')[0]; // Extract HH:MM:SS
-            const formattedDate = now.toLocaleDateString(); // Extract MM/DD/YYYY
-            const newNotification = { ...remoteMessage, time: formattedTime, date: formattedDate };
-            const updatedNotifications = [...notifications, newNotification];
-            setNotifications(updatedNotifications);
-            notificationStore((state) => state.increaseNotifications());
-        });
-
-        messaging().getInitialNotification().then(remoteMessage => {
-            if (remoteMessage) {
-                const now = new Date();
-                const formattedTime = now.toTimeString().split(' ')[0]; // Extract HH:MM:SS
-                const formattedDate = now.toLocaleDateString(); // Extract MM/DD/YYYY
-                const newNotification = { ...remoteMessage, time: formattedTime, date: formattedDate };
-                const updatedNotifications = [...notifications, newNotification];
-                setNotifications(updatedNotifications);
-                notificationStore((state) => state.increaseNotifications());
-            }
-        });
-
-        return unsubscribe;
+        return () => {
+            unsubscribeForeground();
+            unsubscribeBackground();
+        };
     }, [notifications]);
 
+    // Function to format the notification
+    const formatNotification = (remoteMessage) => {
+        const now = new Date();
+        const formattedTime = now.toTimeString().split(' ')[0]; // Extract HH:MM:SS
+        const formattedDate = now.toLocaleDateString(); // Extract MM/DD/YYYY
+        return { ...remoteMessage, time: formattedTime, date: formattedDate };
+    };
+
     // Function to mark all notifications as read
-    const markAllAsRead = () => {
-        notificationStore((state) => state.removeAllNotifications());
+    const markAllAsRead = async () => {
+        await removeAllNotifications();
         setNotifications([]);
     };
 
