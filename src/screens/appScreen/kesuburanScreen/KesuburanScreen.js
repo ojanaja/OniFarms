@@ -7,6 +7,17 @@ import Fonts from '../../../constants/Fonts';
 import { Table, Row, Rows } from 'react-native-table-component';
 import { useNavigation } from '@react-navigation/native';
 
+const calculateParameterColor = (status) => {
+    switch (status) {
+        case 'normal':
+            return Colors.WARNINGORANGE;
+        case 'tinggi':
+            return Colors.RED;
+        case 'rendah':
+            return Colors.GREEN;
+    }
+};
+
 const KesuburanScreen = () => {
     const navigation = useNavigation();
 
@@ -34,6 +45,16 @@ const KesuburanScreen = () => {
         ['Phosphor', ':', '100 - 200ppm'],
         ['Kalium', ':', '100 - 200ppm'],
     ];
+
+    // Example parameter statuses
+    const parameterStatuses = {
+        Suhu: 'normal',
+        Kelembapan: 'tinggi',
+        pH: 'normal',
+        Nitrogen: 'rendah',
+        Phosphor: 'normal',
+        Kalium: 'normal',
+    };
 
     return (
         <ScrollView
@@ -72,19 +93,19 @@ const KesuburanScreen = () => {
                     <View style={styles.indicatorTableTop}>
                         <View style={styles.indicatorLeftCircle}>
                             <Text style={styles.indicatorTableText}>Suhu</Text>
-                            <View style={styles.dangerIcon}>
+                            <View style={[styles.dangerIcon, { backgroundColor: calculateParameterColor(parameterStatuses.Suhu) }]}>
                                 <Image source={require('../../../../assets/images/DangerIcon.png')} />
                             </View>
                         </View>
                         <View style={styles.indicatorMiddleContainer}>
                             <Text style={styles.indicatorTableText}>Kelembapan</Text>
-                            <View style={styles.warningIcon}>
+                            <View style={[styles.warningIcon, { backgroundColor: calculateParameterColor(parameterStatuses.Kelembapan) }]}>
                                 <Image source={require('../../../../assets/images/WarningIcon.png')} />
                             </View>
                         </View>
                         <View style={styles.indicatorRightContainer}>
                             <Text style={styles.indicatorTableText}>pH</Text>
-                            <View style={styles.normalIcon}>
+                            <View style={[styles.normalIcon, { backgroundColor: calculateParameterColor(parameterStatuses.pH) }]}>
                                 <Image source={require('../../../../assets/images/NormalIcon.png')} />
                             </View>
                         </View>
@@ -93,19 +114,19 @@ const KesuburanScreen = () => {
                     <View style={styles.indicatorTableBottom}>
                         <View style={styles.indicatorLeftCircle}>
                             <Text style={styles.indicatorTableText}>Nitrogen</Text>
-                            <View style={styles.dangerIcon}>
+                            <View style={[styles.dangerIcon, { backgroundColor: calculateParameterColor(parameterStatuses.Nitrogen) }]}>
                                 <Image source={require('../../../../assets/images/DangerIcon.png')} />
                             </View>
                         </View>
                         <View style={styles.indicatorMiddleBottomContainer}>
                             <Text style={styles.indicatorTableText}>Phosphor</Text>
-                            <View style={styles.warningIcon}>
+                            <View style={[styles.warningIcon, { backgroundColor: calculateParameterColor(parameterStatuses.Phosphor) }]}>
                                 <Image source={require('../../../../assets/images/WarningIcon.png')} />
                             </View>
                         </View>
                         <View style={styles.indicatorRightContainer}>
                             <Text style={styles.indicatorTableText}>Kalium</Text>
-                            <View style={styles.normalIcon}>
+                            <View style={[styles.normalIcon, { backgroundColor: calculateParameterColor(parameterStatuses.Kalium) }]}>
                                 <Image source={require('../../../../assets/images/NormalIcon.png')} />
                             </View>
                         </View>
@@ -129,7 +150,7 @@ const KesuburanScreen = () => {
                 </TouchableOpacity>
             </LinearGradient>
         </ScrollView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity, PermissionsAndroid, Platform, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Colors from '../../../constants/Colors';
@@ -11,6 +11,8 @@ import { firebase } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import RNSecureStorage from 'rn-secure-storage';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
 
 // Data for dropdown menu
 const data = [
@@ -29,6 +31,72 @@ const PengaturanScreen = () => {
     const [value, setValue] = useState(null); // State for dropdown value
     const [isFocus, setIsFocus] = useState(false); // State to track focus state of dropdown
     const [userName, setUserName] = useState(''); // State to store user's name
+    const [profileImage, setProfileImage] = useState(require('../../../../assets/images/ProfileIcon.png'));
+
+    const requestCameraPermission = async () => {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.CAMERA,
+                {
+                    title: 'Camera Permission',
+                    message: 'App needs camera permission',
+                    buttonNeutral: 'Ask Me Later',
+                    buttonNegative: 'Cancel',
+                    buttonPositive: 'OK',
+                }
+            );
+            return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } catch (err) {
+            console.warn(err);
+            return false;
+        }
+    };
+
+    const handleImagePicker = async () => {
+        if (Platform.OS === 'android') {
+            const cameraPermission = await requestCameraPermission();
+            if (!cameraPermission) {
+                Alert.alert('Camera permission denied');
+                return;
+            }
+        }
+
+        const options = {
+            mediaType: 'photo',
+            quality: 1,
+            includeBase64: false,
+        };
+
+        launchImageLibrary(options, async (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.errorCode) {
+                console.log('ImagePicker Error: ', response.errorMessage);
+            } else {
+                const source = { uri: response.assets[0].uri };
+                setProfileImage(source);
+                await uploadImageToFirebase(response.assets[0]);
+            }
+        });
+    };
+
+    const uploadImageToFirebase = async (image) => {
+        if (!image.uri) { return; }
+
+        const user = firebase.auth().currentUser;
+        const imagePath = `profile_images/${user.uid}/${Date.now()}_${image.fileName}`;
+        const reference = storage().ref(imagePath);
+
+        try {
+            await reference.putFile(image.uri);
+            const url = await reference.getDownloadURL();
+            await firestore().collection('users').doc(user.uid).update({ profileImageUrl: url });
+            console.log('Image uploaded and URL saved to Firestore:', url);
+        } catch (error) {
+            console.error('Error uploading image: ', error);
+        }
+    };
+
 
     const user = firebase.auth().currentUser;
 
@@ -99,11 +167,12 @@ const PengaturanScreen = () => {
 
                         <TouchableOpacity
                             style={styles.profilePicture}
-                            onPress={() => { }}
+                            onPress={handleImagePicker}
                         >
                             <Image style={styles.profilePicturePlusIcon} source={require('../../../../assets/images/ProfilePlusIcon.png')} />
-                            <Image style={styles.profilePictureImage} source={require('../../../../assets/images/ProfileIcon.png')} />
+                            <Image style={styles.profilePictureImage} source={profileImage} />
                         </TouchableOpacity>
+
                         <View style={styles.profileInfo}>
                             <Text style={styles.profileName}>{userName}</Text>
                             <Text style={styles.profileEmail}>{user.email}</Text>
